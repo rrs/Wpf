@@ -1,0 +1,1 @@
+Commonly used WPF boiler plate
