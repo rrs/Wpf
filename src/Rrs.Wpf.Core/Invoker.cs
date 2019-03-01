@@ -28,7 +28,7 @@ namespace Rrs.Wpf.Core
             return (T)Application.Current.Dispatcher.Invoke(func);
         }
 
-        public static Task<T> InvokeAsync<T>(this Dispatcher dispatcher, Func<T> f)
+        public static Task<T> InvokeAsync<T>(Func<T> f)
         {
             var tcs = new TaskCompletionSource<T>();
             Application.Current.Dispatcher.BeginInvoke((Action)(() =>
@@ -47,7 +47,7 @@ namespace Rrs.Wpf.Core
             return tcs.Task;
         }
 
-        public static Task InvokeAsync(this Dispatcher dispatcher, Action a)
+        public static Task InvokeAsync(Action a)
         {
             var tcs = new TaskCompletionSource<object>();
             Application.Current.Dispatcher.BeginInvoke((Action)(() =>
