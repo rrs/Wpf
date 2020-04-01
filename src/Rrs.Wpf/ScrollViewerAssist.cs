@@ -1,7 +1,7 @@
 ﻿using System.Windows;
 using System.Windows.Controls;
 
-namespace Rrs.Wpf.Core
+namespace Rrs.Wpf
 {
     public static class ScrollViewerAssist
     {

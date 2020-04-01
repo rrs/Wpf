@@ -1,7 +1,7 @@
 ﻿using System;
 using System.ComponentModel;
 
-namespace Rrs.Wpf.Core
+namespace Rrs.Wpf
 {
     public class ViewModel : INotifyPropertyChanged
     {

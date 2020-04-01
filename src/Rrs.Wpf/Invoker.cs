@@ -4,7 +4,7 @@ using System.Windows;
 using System.Windows.Input;
 using System.Windows.Threading;
 
-namespace Rrs.Wpf.Core
+namespace Rrs.Wpf
 {
     public static class Invoker
     {

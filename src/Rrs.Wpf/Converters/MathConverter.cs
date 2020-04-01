@@ -2,7 +2,7 @@
 using System.Globalization;
 using System.Windows.Data;
 
-namespace Rrs.Wpf.Core.Converters
+namespace Rrs.Wpf.Converters
 {
     public enum MathOperation
     {

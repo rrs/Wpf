@@ -1,4 +1,4 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk.WindowsDesktop">
   <PropertyGroup>
     <Version>1.0.0.0</Version>
     <PackageVersion>1.0.0.0</PackageVersion>
@@ -8,17 +8,13 @@
     <Description>Rrs.Wpf.Core Class Library</Description>
     <Authors>Robert Snipe</Authors>
     <Copyright>Copyright (c) 2018 Robert Snipe</Copyright>
-    <TargetFrameworks>net40</TargetFrameworks>
-    <AssemblyName>Rrs.Wpf.Core</AssemblyName>
+    <TargetFrameworks>net40;netcoreapp3.1</TargetFrameworks>
+    <AssemblyName>Rrs.Wpf</AssemblyName>
     <PackageId>Rrs.Wpf.Core</PackageId>
     <PackageTags>Wpf;Core;Net40</PackageTags>
-    <PackageProjectUrl>https://github.com/rrs/WpfCore</PackageProjectUrl>
+    <PackageProjectUrl>https://github.com/rrs/Wpf</PackageProjectUrl>
     <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
     <Company>rrs</Company>
+    <UseWPF>true</UseWPF>
   </PropertyGroup>
-  <ItemGroup>
-    <Reference Include="PresentationCore" />
-    <Reference Include="PresentationFramework" />
-    <Reference Include="WindowsBase" />
-  </ItemGroup>
 </Project>

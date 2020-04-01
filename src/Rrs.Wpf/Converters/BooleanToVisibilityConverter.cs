@@ -1,6 +1,6 @@
 ﻿using System.Windows;
 
-namespace Rrs.Wpf.Core.Converters
+namespace Rrs.Wpf.Converters
 {
     public sealed class BooleanToVisibilityConverter : BooleanConverter<Visibility>
     {

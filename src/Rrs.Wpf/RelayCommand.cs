@@ -2,7 +2,7 @@
 using System.Diagnostics;
 using System.Windows.Input;
 
-namespace Rrs.Wpf.Core
+namespace Rrs.Wpf
 {
     /// <summary>
     /// This is an implementation from the web that I have found from multiple sources. I do not know
