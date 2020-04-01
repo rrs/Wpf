@@ -5,13 +5,13 @@
     <AssemblyVersion>1.0.0.0</AssemblyVersion>
     <FileVersion>1.0.0.0</FileVersion>
     <InformationalVersion>1.0.0.0</InformationalVersion>
-    <Description>Rrs.Wpf.Core Class Library</Description>
+    <Description>Rrs.Wpf Class Library</Description>
     <Authors>Robert Snipe</Authors>
     <Copyright>Copyright (c) 2018 Robert Snipe</Copyright>
     <TargetFrameworks>net40;netcoreapp3.1</TargetFrameworks>
     <AssemblyName>Rrs.Wpf</AssemblyName>
-    <PackageId>Rrs.Wpf.Core</PackageId>
-    <PackageTags>Wpf;Core;Net40</PackageTags>
+    <PackageId>Rrs.Wpf</PackageId>
+    <PackageTags>Wpf;Net40</PackageTags>
     <PackageProjectUrl>https://github.com/rrs/Wpf</PackageProjectUrl>
     <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
     <Company>rrs</Company>
