@@ -1,17 +1,13 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk.WindowsDesktop">
   <PropertyGroup>
-    <Version>1.0.0.0</Version>
-    <PackageVersion>1.0.0.0</PackageVersion>
-    <AssemblyVersion>1.0.0.0</AssemblyVersion>
-    <FileVersion>1.0.0.0</FileVersion>
-    <InformationalVersion>1.0.0.0</InformationalVersion>
+    <Version>2.0.0.0</Version>
     <Description>Rrs.Wpf Class Library</Description>
     <Authors>Robert Snipe</Authors>
     <Copyright>Copyright (c) 2018 Robert Snipe</Copyright>
-    <TargetFrameworks>net40;netcoreapp3.1</TargetFrameworks>
+    <TargetFrameworks>net452;netcoreapp3.1</TargetFrameworks>
     <AssemblyName>Rrs.Wpf</AssemblyName>
     <PackageId>Rrs.Wpf</PackageId>
-    <PackageTags>Wpf;Net40</PackageTags>
+    <PackageTags>Wpf;Net452;Core3.1</PackageTags>
     <PackageProjectUrl>https://github.com/rrs/Wpf</PackageProjectUrl>
     <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
     <Company>rrs</Company>
