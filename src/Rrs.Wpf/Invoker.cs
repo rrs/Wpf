@@ -28,42 +28,38 @@ namespace Rrs.Wpf
             return (T)Application.Current.Dispatcher.Invoke(func);
         }
 
-        public static Task<T> InvokeAsync<T>(Func<T> f)
+        public static DispatcherOperation InvokeAsync<T>(Func<T> f)
         {
-            var tcs = new TaskCompletionSource<T>();
-            Application.Current.Dispatcher.BeginInvoke((Action)(() =>
-            {
-                try
-                {
-                    var v = f();
-                    tcs.SetResult(v);
-                }
-                catch (Exception e)
-                {
-                    tcs.SetException(e);
-                }
-            }));
-
-            return tcs.Task;
+            return Application.Current.Dispatcher.InvokeAsync(f);
         }
 
-        public static Task InvokeAsync(Action a)
+        public static DispatcherOperation InvokeAsync(Action a)
         {
-            var tcs = new TaskCompletionSource<object>();
-            Application.Current.Dispatcher.BeginInvoke((Action)(() =>
-            {
-                try
-                {
-                    a();
-                    tcs.SetResult(null);
-                }
-                catch (Exception e)
-                {
-                    tcs.SetException(e);
-                }
-            }));
+            return Application.Current.Dispatcher.InvokeAsync(a);
+        }
 
-            return tcs.Task;
+        public static void InvokeAsyncIfRequired(Action a)
+        {
+            if (Application.Current.Dispatcher.CheckAccess())
+            {
+                a();
+            }
+            else
+            {
+                Application.Current.Dispatcher.InvokeAsync(a);
+            }
+        }
+
+        public static void InvokeAsyncIfRequired<T>(Func<T> f)
+        {
+            if (Application.Current.Dispatcher.CheckAccess())
+            {
+                f();
+            }
+            else
+            {
+                Application.Current.Dispatcher.InvokeAsync(f);
+            }
         }
     }
 }
