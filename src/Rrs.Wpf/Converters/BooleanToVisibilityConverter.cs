@@ -1,11 +1,10 @@
 ﻿using System.Windows;
 
-namespace Rrs.Wpf.Converters
+namespace Rrs.Wpf.Converters;
+
+public sealed class BooleanToVisibilityConverter : BooleanConverter<Visibility>
 {
-    public sealed class BooleanToVisibilityConverter : BooleanConverter<Visibility>
-    {
-        public BooleanToVisibilityConverter() :
-            base(Visibility.Visible, Visibility.Collapsed)
-        { }
-    }
+    public BooleanToVisibilityConverter() :
+        base(Visibility.Visible, Visibility.Collapsed)
+    { }
 }

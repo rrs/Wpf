@@ -1,53 +1,48 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Reflection;
-using System.Runtime.CompilerServices;
-using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Input;
 
-namespace Rrs.Wpf
+namespace Rrs.Wpf;
+
+public class AsyncRelayCommand : ICommand
 {
-    public class AsyncRelayCommand : ICommand
+    private readonly Func<object, Task> execute;
+    private readonly Func<object, bool> canExecute;
+
+    private bool _isExecuting;
+
+    public AsyncRelayCommand(Func<object, Task> execute, Func<object, bool> canExecute = null)
     {
-        private readonly Func<object, Task> execute;
-        private readonly Func<object, bool> canExecute;
+        this.execute = execute;
+        this.canExecute = canExecute ?? (_ => true);
+    }
 
-        private bool _isExecuting;
+    public event EventHandler CanExecuteChanged
+    {
+        add { CommandManager.RequerySuggested += value; }
+        remove { CommandManager.RequerySuggested -= value; }
+    }
 
-        public AsyncRelayCommand(Func<object, Task> execute, Func<object, bool> canExecute = null)
+    public void RaiseCanExecuteChanged()
+    {
+        CommandManager.InvalidateRequerySuggested();
+    }
+
+    public bool CanExecute(object parameter) => !_isExecuting && canExecute(parameter);
+
+    public async void Execute(object parameter)
+    {
+        _isExecuting = true;
+        RaiseCanExecuteChanged();
+
+        try
         {
-            this.execute = execute;
-            this.canExecute = canExecute ?? (_ => true);
+            await execute(parameter);
         }
-
-        public event EventHandler CanExecuteChanged
+        finally
         {
-            add { CommandManager.RequerySuggested += value; }
-            remove { CommandManager.RequerySuggested -= value; }
-        }
-
-        public void RaiseCanExecuteChanged()
-        {
-            CommandManager.InvalidateRequerySuggested();
-        }
-
-        public bool CanExecute(object parameter) => !_isExecuting && canExecute(parameter);
-
-        public async void Execute(object parameter)
-        {
-            _isExecuting = true;
+            _isExecuting = false;
             RaiseCanExecuteChanged();
-
-            try
-            {
-                await execute(parameter);
-            }
-            finally
-            {
-                _isExecuting = false;
-                RaiseCanExecuteChanged();
-            }
         }
     }
 }
