@@ -2,15 +2,15 @@
 
 public class ValidationViewModel : ViewModel
 {
-    private bool _supressValidation = true;
+    private bool _suppressValidation = true;
     
-    public bool SupressValidation
+    public bool SuppressValidation
     {
-        get => _supressValidation;
+        get => _suppressValidation;
         protected set
         {
-            _supressValidation = value;
-            OnPropertyChanged(nameof(SupressValidation));
+            _suppressValidation = value;
+            OnPropertyChanged(nameof(SuppressValidation));
         }
     }
 }
