@@ -15,6 +15,8 @@ public enum MathOperation
 public sealed class MathConverter : IValueConverter
 {
     public MathOperation Operation { get; set; }
+    public double? Min { get; set; }
+    public double? Max { get; set; }
 
     public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
     {
@@ -25,16 +27,23 @@ public sealed class MathConverter : IValueConverter
             switch (Operation)
             {
                 case MathOperation.Add:
-                    return value1 + value2;
+                    return Limit(value1 + value2);
                 case MathOperation.Divide:
-                    return value1 / value2;
+                    return Limit(value1 / value2);
                 case MathOperation.Multiply:
-                    return value1 * value2;
+                    return Limit(value1 * value2);
                 case MathOperation.Subtract:
-                    return value1 - value2;
+                    return Limit(value1 - value2);
                 default:
                     return Binding.DoNothing;
             }
+            double Limit(double value)
+            {
+                if (Min.HasValue && value < Min.Value) return Min.Value;
+                if (Max.HasValue && value > Max.Value) return Max.Value;
+                return value;
+            }
+
         }
         catch (FormatException)
         {
