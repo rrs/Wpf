@@ -15,7 +15,8 @@ public class NumberValidationRule : ValidationRule
     public decimal? Min { get; set; }
     public decimal? Max { get; set; }
 
-    public string ErrorNumberStringFormat { get; set; }
+    public string MinErrorFormatString { get; set; }
+    public string MaxErrorFormatString { get; set; }
 
     public override ValidationResult Validate(object value, CultureInfo cultureInfo)
     {
@@ -26,8 +27,8 @@ public class NumberValidationRule : ValidationRule
         
         if (decimal.TryParse(value?.ToString(), out var d))
         {
-            if (Min.HasValue && d < Min) return new ValidationResult(false, $"Value can not be less than {FormatNumber(Min.Value, ErrorNumberStringFormat)}");
-            if (Max.HasValue && d > Max) return new ValidationResult(false, $"Value can not be more than {FormatNumber(Max.Value, ErrorNumberStringFormat)}");
+            if (Min.HasValue && d < Min) return new ValidationResult(false, string.Format(MinErrorFormatString ?? "Value can not be less than {0}", Min.Value));
+            if (Max.HasValue && d > Max) return new ValidationResult(false, string.Format(MaxErrorFormatString ?? "Value can not be more than {0}", Max.Value));
             return ValidationResult.ValidResult;
         }
         else if (value == null)
@@ -39,7 +40,7 @@ public class NumberValidationRule : ValidationRule
             return new ValidationResult(false, $"Value is not a number");
         }
 
-        static string FormatNumber(decimal value, string formatString) => string.IsNullOrWhiteSpace(formatString) ? value.ToString() : value.ToString(formatString);
+        static string FormatNumber(decimal value, string formatString) => string.IsNullOrWhiteSpace(formatString) ? value.ToString() : string.Format(formatString, value);
     }
 
     private static class GetterResolver
