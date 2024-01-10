@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Input;
 using System.Windows.Threading;
@@ -24,10 +25,10 @@ public static class Invoker
 
     public static T Invoke<T>(Func<T> func)
     {
-        return (T)Application.Current.Dispatcher.Invoke(func);
+        return Application.Current.Dispatcher.Invoke(func);
     }
 
-    public static DispatcherOperation InvokeAsync<T>(Func<T> f)
+    public static DispatcherOperation<T> InvokeAsync<T>(Func<T> f)
     {
         return Application.Current.Dispatcher.InvokeAsync(f);
     }
@@ -49,15 +50,16 @@ public static class Invoker
         }
     }
 
-    public static void InvokeAsyncIfRequired<T>(Func<T> f)
+    public static async Task<T> InvokeAsyncIfRequired<T>(Func<T> f)
     {
         if (Application.Current.Dispatcher.CheckAccess())
         {
-            f();
+            return f();
         }
         else
         {
-            Application.Current.Dispatcher.InvokeAsync(f);
+            var dispatcherOperation = await Application.Current.Dispatcher.InvokeAsync(f);
+            return dispatcherOperation;
         }
     }
 }
