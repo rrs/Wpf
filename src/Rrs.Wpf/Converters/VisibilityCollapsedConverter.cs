@@ -2,9 +2,9 @@
 
 namespace Rrs.Wpf.Converters;
 
-public sealed class BooleanToVisibilityConverter : BooleanConverter<Visibility>
+public sealed class VisibilityCollapsedConverter : BooleanConverter<Visibility>
 {
-    public BooleanToVisibilityConverter() :
+    public VisibilityCollapsedConverter() :
         base(Visibility.Visible, Visibility.Collapsed)
     { }
 }
