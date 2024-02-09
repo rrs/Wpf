@@ -78,6 +78,51 @@ public class NavigationArea : Selector
         HandleItemsChanged();
     }
 
+    private static readonly Point DefaultTransitionOrigin = new(0.5, 0.5);
+    private readonly Stack<ViewInfo> _history = new();
+    private readonly Dictionary<FrameworkElement, Guid?> _toRemove = [];
+    private readonly Dictionary<TypeAndNameKey, PresenterInfo> _presenters = [];
+
+    private Grid? _grid;
+    private ViewInfo? _currentView;
+
+    public NavigationArea()
+    {
+        CommandBindings.Add(new CommandBinding(NavigationCommands.NextPage, NextPageExecuted, CanExecuteNextPage));
+        CommandBindings.Add(new CommandBinding(NavigationCommands.PreviousPage, PreviousPageExecuted, CanExecutePreviousPage));
+        CommandBindings.Add(new CommandBinding(NavigationCommands.FirstPage, FirstPageExecuted, CanExecutePreviousPage));
+        var initialised = false;
+        Loaded += (sender, args) =>
+        {
+            if (initialised) return;
+            if (Items.Count > 0)
+            {
+                if (ItemsSource == null)
+                {
+                    foreach (var item in Items)
+                    {
+                        RemoveLogicalChild(item);
+                    }
+                }
+                HandleItemsChanged();
+            }
+            initialised = true;
+        };
+        Unloaded += (sender, args) =>
+        {
+            if (_currentView == null) return;
+            TryOnNavigateFromView(_currentView.View);
+        };
+    }
+
+    public override void OnApplyTemplate()
+    {
+        base.OnApplyTemplate();
+        var grid = GetTemplateChild(PART_Grid) as Grid;
+        _grid = grid ?? throw new Exception("NavigationArea needs a Grid in the template to work");
+        AddLogicalChild(grid);
+    }
+
     private void HandleItemsChanged()
     {
         if (_grid == null) return;
@@ -120,51 +165,15 @@ public class NavigationArea : Selector
             SelectedIndex = 0;
         }
 
-        static string? CoerseFrameworkElementName(FrameworkElement e) => e.Name == string.Empty ? null : e.Name;
-    }
-
-    private static readonly Point DefaultTransitionOrigin = new(0.5, 0.5);
-    private readonly Stack<ViewInfo> _history = new();
-    private readonly Dictionary<FrameworkElement, Guid?> _toRemove = [];
-    private readonly Dictionary<TypeAndNameKey, PresenterInfo> _presenters = [];
-
-    private Grid? _grid;
-    private ViewInfo? _currentView;
-
-    public NavigationArea()
-    {
-        CommandBindings.Add(new CommandBinding(NavigationCommands.NextPage, NextPageExecuted, CanExecuteNextPage));
-        CommandBindings.Add(new CommandBinding(NavigationCommands.PreviousPage, PreviousPageExecuted, CanExecutePreviousPage));
-        CommandBindings.Add(new CommandBinding(NavigationCommands.FirstPage, FirstPageExecuted, CanExecutePreviousPage));
-        var initialised = false;
-        Loaded += (sender, args) =>
+        if (_currentView != null)
         {
-            if (initialised) return;
-            if (Items.Count > 0)
+            Dispatcher.InvokeAsync(() =>
             {
-                if (ItemsSource == null)
-                {
-                    foreach (var item in Items)
-                    {
-                        RemoveLogicalChild(item);
-                    }
-                }
-                HandleItemsChanged();
-            }
-            initialised = true;
-        };
-        Unloaded += (sender, args) =>
-        {
-            //TryDeactivate();
-        };
-    }
+                TryOnNavigateToView(_currentView.View);
+            }, System.Windows.Threading.DispatcherPriority.ContextIdle);
+        }
 
-    public override void OnApplyTemplate()
-    {
-        base.OnApplyTemplate();
-        var grid = GetTemplateChild(PART_Grid) as Grid;
-        _grid = grid ?? throw new Exception("NavigationArea needs a Grid in the template to work");
-        AddLogicalChild(grid);
+        static string? CoerseFrameworkElementName(FrameworkElement e) => e.Name == string.Empty ? null : e.Name;
     }
 
     private void CanExecuteNextPage(object sender, CanExecuteRoutedEventArgs e)
@@ -266,8 +275,8 @@ public class NavigationArea : Selector
         oldViewInfo.View.IsHitTestVisible = false;
         nextViewInfo.View.IsHitTestVisible = true;
 
-        TryNavigateFromView(oldViewInfo.View);
-        TryNavigateToView(nextViewInfo.View);
+        TryOnNavigateFromView(oldViewInfo.View);
+        TryOnNavigateToView(nextViewInfo.View);
 
         var contextId = Guid.NewGuid();
         _toRemove[oldViewInfo.View] = contextId;
@@ -275,23 +284,23 @@ public class NavigationArea : Selector
         return contextId;
     }
 
-    private static void TryNavigateFromView(FrameworkElement view)
+    private static void TryOnNavigateFromView(FrameworkElement view)
     {
-        TryNavigateFrom(view);
-        TryNavigateFrom(view.DataContext);
+        TryOnNavigateFrom(view);
+        TryOnNavigateFrom(view.DataContext);
 
-        static void TryNavigateFrom(object? o)
+        static void TryOnNavigateFrom(object? o)
         {
             if (o is INavigateFrom n) n.OnNavigatedFrom();
         }
     }
 
-    private static void TryNavigateToView(FrameworkElement view)
+    private static void TryOnNavigateToView(FrameworkElement view)
     {
-        TryNavigateTo(view);
-        TryNavigateTo(view.DataContext);
+        TryOnNavigateTo(view);
+        TryOnNavigateTo(view.DataContext);
 
-        static void TryNavigateTo(object? o)
+        static void TryOnNavigateTo(object? o)
         {
             if (o is INavigateTo n) n.OnNavigatedTo();
         }
