@@ -12,6 +12,8 @@
     <PackageProjectUrl>https://github.com/rrs/Wpf</PackageProjectUrl>
     <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
     <Company>rrs</Company>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
     <UseWPF>true</UseWPF>
   </PropertyGroup>
   <ItemGroup>

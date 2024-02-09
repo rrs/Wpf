@@ -19,15 +19,17 @@ public static class ScrollViewerAssist
 
     public static void AutoScrollPropertyChanged(DependencyObject obj, DependencyPropertyChangedEventArgs args)
     {
-        var scrollViewer = obj as ScrollViewer;
-        if (scrollViewer != null && (bool)args.NewValue)
+        if (obj is ScrollViewer scrollViewer)
         {
-            scrollViewer.ScrollChanged += ScrollViewer_ScrollChanged;
-            scrollViewer.ScrollToEnd();
-        }
-        else
-        {
-            scrollViewer.ScrollChanged -= ScrollViewer_ScrollChanged;
+            if ((bool)args.NewValue)
+            {
+                scrollViewer.ScrollChanged += ScrollViewer_ScrollChanged;
+                scrollViewer.ScrollToEnd();
+            }
+            else
+            {
+                scrollViewer.ScrollChanged -= ScrollViewer_ScrollChanged;
+            }
         }
     }
 

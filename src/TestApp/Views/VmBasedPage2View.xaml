@@ -1,0 +1,57 @@
+﻿<UserControl x:Class="TestApp.Views.VmBasedPage2View"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:rrs="https://github.com/rrs/wpf"
+             mc:Ignorable="d"
+             Background="Bisque"
+             d:DesignHeight="300" d:DesignWidth="600">
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition />
+            <RowDefinition Height="Auto" />
+        </Grid.RowDefinitions>
+        <TextBlock HorizontalAlignment="Center" FontSize="20">Sub Page 2</TextBlock>
+        <Grid Grid.Row="1">
+            <Rectangle Fill="RosyBrown" Width="400" Height="200">
+                <Rectangle.OpacityMask>
+                    <DrawingBrush Stretch="None">
+                        <DrawingBrush.Drawing>
+                            <DrawingGroup>
+                                <DrawingGroup.ClipGeometry>
+                                    <RectangleGeometry Rect="0,0,400,200" />
+                                </DrawingGroup.ClipGeometry>
+                                <GeometryDrawing>
+                                    <GeometryDrawing.Brush>
+                                        <SolidColorBrush Color="Black" Opacity="0.5" />
+                                    </GeometryDrawing.Brush>
+                                    <GeometryDrawing.Geometry>
+                                        <RectangleGeometry Rect="0,0,400,200" />
+                                    </GeometryDrawing.Geometry>
+                                </GeometryDrawing>
+                                <GeometryDrawing Brush="Black">
+                                    <GeometryDrawing.Geometry>
+                                        <RectangleGeometry Rect="240,60,80,80" >
+                                            <RectangleGeometry.Transform>
+                                                <TransformGroup>
+                                                    <TranslateTransform X="0" Y="0" />
+                                                    <RotateTransform Angle="20" CenterX="240" CenterY="60" />
+                                                </TransformGroup>
+                                            </RectangleGeometry.Transform>
+                                        </RectangleGeometry>
+                                    </GeometryDrawing.Geometry>
+                                </GeometryDrawing>
+                            </DrawingGroup>
+                        </DrawingBrush.Drawing>
+                    </DrawingBrush>
+                </Rectangle.OpacityMask>
+            </Rectangle>
+        </Grid>
+        <StackPanel Grid.Row="2" Orientation="Horizontal" HorizontalAlignment="Right">
+            <Button Command="NavigationCommands.PreviousPage">Back</Button>
+            <Button Command="NavigationCommands.NextPage" CommandParameter="{rrs:Navigation ForwardsTransition={rrs:SlideWipe}, BackwardsTransition={rrs:SlideWipe Direction=Right}}">Next</Button>
+        </StackPanel>
+    </Grid>
+</UserControl>

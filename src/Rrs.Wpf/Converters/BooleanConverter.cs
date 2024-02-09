@@ -14,18 +14,18 @@ public abstract class BooleanConverter<T> : MarkupExtension, IValueConverter
         False = falseValue;
     }
 
-    public T True { get; set; }
-    public T False { get; set; }
+    public T? True { get; set; }
+    public T? False { get; set; }
     public bool Inverted { get; set; }
 
-    public virtual object Convert(object value, Type targetType, object parameter, CultureInfo culture)
+    public virtual object? Convert(object value, Type targetType, object parameter, CultureInfo culture)
     {
-        return Inverted^(value is bool && ((bool)value)) ? True : False;
+        return Inverted^(value is bool b && b) ? True : False;
     }
 
     public virtual object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
     {
-        return Inverted^(value is T && EqualityComparer<T>.Default.Equals((T)value, True));
+        return Inverted^(value is T t && True != null && EqualityComparer<T>.Default.Equals(t, True));
     }
 
     public override object ProvideValue(IServiceProvider serviceProvider) => this;

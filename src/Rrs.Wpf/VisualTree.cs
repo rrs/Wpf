@@ -1,4 +1,5 @@
-﻿using System.Windows;
+﻿using System.Collections.Generic;
+using System.Windows;
 using System.Windows.Media;
 
 namespace Rrs.Wpf;
@@ -12,19 +13,20 @@ public static class VisualTree
     /// <typeparam name="T">The type to search for.</typeparam>
     /// <param name="obj">The object at the root of the tree to search.</param>
     /// <returns>The visual child.</returns>
-    public static T FindVisualChild<T>(this DependencyObject obj)
+    public static T? FindVisualChild<T>(this DependencyObject? obj)
         where T : DependencyObject
     {
+        if (obj == null) return null;
         for (int i = 0; i < VisualTreeHelper.GetChildrenCount(obj); i++)
         {
             DependencyObject child = VisualTreeHelper.GetChild(obj, i);
-            if (child != null && child is T)
+            if (child != null && child is T t)
             {
                 return (T)child;
             }
             else
             {
-                T childOfChild = FindVisualChild<T>(child);
+                T? childOfChild = FindVisualChild<T>(child);
                 if (childOfChild != null)
                 {
                     return childOfChild;
@@ -42,13 +44,14 @@ public static class VisualTree
     /// <typeparam name="T">The type to search for.</typeparam>
     /// <param name="obj">The object at the root of the tree to search.</param>
     /// <returns>The visual parent.</returns>
-    public static T FindVisualParent<T>(this DependencyObject obj)
+    public static T? FindVisualParent<T>(this DependencyObject? obj)
         where T : DependencyObject
     {
+        if (obj == null) return null;
         DependencyObject parent = VisualTreeHelper.GetParent(obj);
         while (parent != null)
         {
-            T typed = parent as T;
+            T? typed = parent as T;
             if (typed != null)
             {
                 return typed;
@@ -60,17 +63,17 @@ public static class VisualTree
         return null;
     }
 
-    public static T FindChild<T>(this DependencyObject parent, string childName) where T : DependencyObject
+    public static T? FindChild<T>(this DependencyObject parent, string childName) where T : DependencyObject
     {
         // Confirm parent and childName are valid.
         if (parent == null) return null;
-        T foundChild = null;
+        T? foundChild = null;
         int childrenCount = VisualTreeHelper.GetChildrenCount(parent);
         for (int i = 0; i < childrenCount; i++)
         {
             var child = VisualTreeHelper.GetChild(parent, i);
             // If the child is not of the request child type child
-            T childType = child as T;
+            T? childType = child as T;
             if (childType == null)
             {
                 // recursively drill down the tree
@@ -97,5 +100,32 @@ public static class VisualTree
             }
         }
         return foundChild;
+    }
+
+    public static T? FindChildBreadthSearch<T>(this DependencyObject? parent, string childName) where T : DependencyObject
+    {
+        if (parent == null) return default;
+
+        var queue = new Queue<DependencyObject>();
+        queue.Enqueue(parent);
+
+        while (queue.Count > 0)
+        {
+            var current = queue.Dequeue();
+            if (current is T t)
+            {
+                if (string.IsNullOrEmpty(childName)) return t;
+                if (current is FrameworkElement frameworkElement && frameworkElement.Name == childName) return t;
+            }
+
+            int childrenCount = VisualTreeHelper.GetChildrenCount(current);
+            for (int i = 0; i < childrenCount; i++)
+            {
+                DependencyObject child = VisualTreeHelper.GetChild(current, i);
+                queue.Enqueue(child);
+            }
+        }
+
+        return null;
     }
 }

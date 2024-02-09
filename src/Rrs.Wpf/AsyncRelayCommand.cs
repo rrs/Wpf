@@ -6,18 +6,18 @@ namespace Rrs.Wpf;
 
 public class AsyncRelayCommand : ICommand
 {
-    private readonly Func<object, Task> execute;
-    private readonly Func<object, bool> canExecute;
+    private readonly Func<object?, Task> _execute;
+    private readonly Func<object?, bool> _canExecute;
 
     private bool _isExecuting;
 
-    public AsyncRelayCommand(Func<object, Task> execute, Func<object, bool> canExecute = null)
+    public AsyncRelayCommand(Func<object?, Task> execute, Func<object?, bool>? canExecute = null)
     {
-        this.execute = execute;
-        this.canExecute = canExecute ?? (_ => true);
+        _execute = execute;
+        _canExecute = canExecute ?? (_ => true);
     }
 
-    public event EventHandler CanExecuteChanged
+    public event EventHandler? CanExecuteChanged
     {
         add { CommandManager.RequerySuggested += value; }
         remove { CommandManager.RequerySuggested -= value; }
@@ -28,16 +28,16 @@ public class AsyncRelayCommand : ICommand
         CommandManager.InvalidateRequerySuggested();
     }
 
-    public bool CanExecute(object parameter) => !_isExecuting && canExecute(parameter);
+    public bool CanExecute(object? parameter) => !_isExecuting && _canExecute(parameter);
 
-    public async void Execute(object parameter)
+    public async void Execute(object? parameter)
     {
         _isExecuting = true;
         RaiseCanExecuteChanged();
 
         try
         {
-            await execute(parameter);
+            await _execute(parameter);
         }
         finally
         {

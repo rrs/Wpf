@@ -7,7 +7,7 @@ namespace Rrs.Wpf;
 public class BindingProxy : FrameworkElement
 {
     public static readonly DependencyProperty InProperty =
-        DependencyProperty.Register("In", typeof(object), typeof(BindingProxy), new FrameworkPropertyMetadata(InPropertyChanged)
+        DependencyProperty.Register(nameof(In), typeof(object), typeof(BindingProxy), new FrameworkPropertyMetadata(InPropertyChanged)
         {
             BindsTwoWayByDefault = false,
             DefaultUpdateSourceTrigger = UpdateSourceTrigger.PropertyChanged
@@ -21,12 +21,12 @@ public class BindingProxy : FrameworkElement
 
     public object In
     {
-        get { return GetValue(InProperty); }
-        set { SetValue(InProperty, value); }
+        get => GetValue(InProperty);
+        set => SetValue(InProperty, value);
     }
 
     public static readonly DependencyProperty OutProperty =
-        DependencyProperty.Register("Out", typeof(object), typeof(BindingProxy), new FrameworkPropertyMetadata(OutPropertyChanged)
+        DependencyProperty.Register(nameof(Out), typeof(object), typeof(BindingProxy), new FrameworkPropertyMetadata(OutPropertyChanged)
         {
             BindsTwoWayByDefault = true,
             DefaultUpdateSourceTrigger = UpdateSourceTrigger.PropertyChanged
@@ -34,7 +34,7 @@ public class BindingProxy : FrameworkElement
 
     private static void OutPropertyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
     {
-        ValueSource source = DependencyPropertyHelper.GetValueSource(d, e.Property);
+        var source = DependencyPropertyHelper.GetValueSource(d, e.Property);
 
         var proxy = (BindingProxy)d;
         var expected = proxy.In;
@@ -49,8 +49,8 @@ public class BindingProxy : FrameworkElement
 
     public object Out
     {
-        get { return GetValue(OutProperty); }
-        set { SetValue(OutProperty, value); }
+        get => GetValue(OutProperty);
+        set => SetValue(OutProperty, value);
     }
 
     public BindingProxy()
