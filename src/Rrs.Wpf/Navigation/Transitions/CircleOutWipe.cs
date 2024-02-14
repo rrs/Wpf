@@ -9,7 +9,7 @@ namespace Rrs.Wpf.Navigation.Transitions;
 /// </summary>
 public class CircleOutWipe : MarkupExtension, ITransition
 {
-    public TimeSpan Duration { get; set; } = TimeSpan.FromMilliseconds(300);
+    public TimeSpan Duration { get; set; } = TimeSpan.FromMilliseconds(3000);
 
     public void Transition(FrameworkElement fromSlide, FrameworkElement toSlide, Point origin, Action onComplete)
     {

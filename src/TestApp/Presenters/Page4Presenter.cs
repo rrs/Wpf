@@ -1,4 +1,5 @@
-﻿using Rrs.Wpf.Navigation;
+﻿using Rrs.Wpf;
+using Rrs.Wpf.Navigation;
 using System.Windows;
 using TestApp.Data.Objects;
 using TestApp.ViewModels;
@@ -10,12 +11,10 @@ internal class Page4Presenter : IPresenter<Page4Data>
 {
     public FrameworkElement PresentView(Page4Data? data)
     {
-        return new Page4View
-        {
-            DataContext = new Page4ViewModel
-            {
-                Name = data?.Name
-            }
-        };
+        var view = new Page4View();
+        var appCommander = new FocusedElementAppCommander(view, view.Dispatcher);
+        view.DataContext = new Page4ViewModel(appCommander) { Name = data?.Name };
+
+        return view;
     }
 }

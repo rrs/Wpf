@@ -21,6 +21,12 @@ public class NavigationParameters
         FrameworkElementName = elementName;
     }
 
+    public NavigationParameters(Type pageType, bool addCurrentPageToHistory)
+    {
+        PageType = pageType;
+        AddCurrentPageToHistory = addCurrentPageToHistory;
+    }
+
     public static NavigationParameters Create<TViewModel>(Action<TViewModel> pageAction, bool addCurrentPageToHistory)
         => new()
         {

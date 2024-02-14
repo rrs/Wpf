@@ -24,9 +24,9 @@ internal class Page2ViewModel : ViewModel
 
     public bool ShowSecret => Cookies == 1337;
 
-    public Page2ViewModel()
+    public Page2ViewModel(INavigator navigator)
     {
-        NextPageCommand = new RelayCommand(_ => Navigator.With<int>(Cookies).NextPage<Page3Presenter>());
+        NextPageCommand = new RelayCommand(_ => navigator.With(Cookies).NextPage<Page3Presenter>());
         CookieCommand = new RelayCommand(_ => Cookies++);
     }
 }

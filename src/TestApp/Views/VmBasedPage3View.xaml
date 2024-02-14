@@ -35,7 +35,6 @@
                                         <RectangleGeometry Rect="280,10,80,80" >
                                             <RectangleGeometry.Transform>
                                                 <TransformGroup>
-                                                    <TranslateTransform X="0" Y="0" />
                                                     <RotateTransform Angle="10" CenterX="280" CenterY="10" />
                                                 </TransformGroup>
                                             </RectangleGeometry.Transform>
@@ -47,6 +46,18 @@
                     </DrawingBrush>
                 </Rectangle.OpacityMask>
             </Rectangle>
+            <Canvas Width="400" Height="200">
+                <Button Canvas.Left="280" Canvas.Top="10" Width="80" Height="80" Command="{Binding CloseCommand}">
+                    <Button.RenderTransform>
+                        <RotateTransform Angle="10" />
+                    </Button.RenderTransform>
+                    <Button.Template>
+                        <ControlTemplate>
+                            <Border Background="Transparent" />
+                        </ControlTemplate>
+                    </Button.Template>
+                </Button>
+            </Canvas>
         </Grid>
         <StackPanel Grid.Row="2" Orientation="Horizontal" HorizontalAlignment="Right">
             <Button Command="NavigationCommands.PreviousPage">Back</Button>

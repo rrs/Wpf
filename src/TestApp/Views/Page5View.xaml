@@ -3,6 +3,7 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:sys="clr-namespace:System;assembly=mscorlib"
              xmlns:rrs="https://github.com/rrs/wpf"
              mc:Ignorable="d" 
              Background="Honeydew"
@@ -14,6 +15,7 @@
             <RowDefinition Height="Auto" />
         </Grid.RowDefinitions>
         <TextBlock HorizontalAlignment="Center" FontSize="40">Page 5</TextBlock>
+        <TextBlock x:Name="Date" Grid.Row="1" HorizontalAlignment="Center" FontSize="20" Text="{Binding Source={x:Static sys:DateTime.Now}, StringFormat=dd-MM-yyyy}" />
         <TextBlock Grid.Row="1" HorizontalAlignment="Center" FontSize="20" Margin="32" Text="{Binding SelectedItem.Name, ElementName=Page5SubNavigator}" />
         <rrs:NavigationHost Grid.Row="1" Margin="64">
             <Grid>
@@ -35,6 +37,7 @@
                                     <Setter Property="Margin" Value="8" />
                                     <Setter Property="BorderBrush" Value="Gray" />
                                     <Setter Property="BorderThickness" Value="1" />
+                                    <Setter Property="CornerRadius" Value="3" />
                                 </Style>
                                 <Style TargetType="TextBlock">
                                     <Setter Property="HorizontalAlignment" Value="Center" />
@@ -74,10 +77,10 @@
                         </StackPanel>
                     </Grid>
                     <Grid x:Name="Reports" Background="Linen">
-                        <UniformGrid>
+                        <UniformGrid Margin="2">
                             <UniformGrid.Resources>
-                                <Style TargetType="Button">
-                                    <Setter Property="Margin" Value="4" />
+                                <Style TargetType="Button" BasedOn="{StaticResource {x:Type Button}}">
+                                    <Setter Property="Margin" Value="3" />
                                 </Style>
                             </UniformGrid.Resources>
                             <Button>Report 1</Button>

@@ -56,15 +56,14 @@
             <TextBlock FontSize="20">What is your Name?</TextBlock>
             <TextBox x:Name="MaName" FontSize="20" />
         </StackPanel >
-        <rrs:BindingProxy In="{Binding Text, ElementName=MaName}" Out="{Binding Name, ElementName=Page4Name}" />
+        <rrs:BindingProxy In="{Binding Text, ElementName=MaName}" Out="{Binding Name, ElementName=Page4Data}" />
         <StackPanel Grid.Row="2" Orientation="Horizontal" HorizontalAlignment="Right">
             <Button Command="NavigationCommands.PreviousPage">Back</Button>
             <Button Command="NavigationCommands.NextPage" Content="Next">
                 <Button.CommandParameter>
                     <rrs:Navigation PageType="{x:Type presenters:Page4Presenter}">
                         <rrs:Navigation.Parameter>
-                            <o:Page4Data x:Name="Page4Name">
-                            </o:Page4Data>
+                            <o:Page4Data x:Name="Page4Data" />
                         </rrs:Navigation.Parameter>
                     </rrs:Navigation>
                 </Button.CommandParameter>

@@ -55,22 +55,22 @@
                                     <Trigger Property="Visibility" Value="Visible">
                                         <Trigger.EnterActions>
                                             <BeginStoryboard>
-                                                <Storyboard Duration="0:0:1">
+                                                <Storyboard Duration="0:0:0.6">
                                                     <DoubleAnimationUsingKeyFrames Storyboard.TargetName="ScaleTransform" Storyboard.TargetProperty="ScaleX">
                                                         <DiscreteDoubleKeyFrame Value="0" KeyTime="0" />
-                                                        <DiscreteDoubleKeyFrame Value="0" KeyTime="0:0:0.4" />
-                                                        <EasingDoubleKeyFrame Value="1" KeyTime="0:0:1">
+                                                        <DiscreteDoubleKeyFrame Value="0" KeyTime="0:0:0.3" />
+                                                        <EasingDoubleKeyFrame Value="1" KeyTime="0:0:0.6">
                                                             <EasingDoubleKeyFrame.EasingFunction>
-                                                                <BackEase EasingMode="EaseOut" />
+                                                                <CircleEase />
                                                             </EasingDoubleKeyFrame.EasingFunction>
                                                         </EasingDoubleKeyFrame>
                                                     </DoubleAnimationUsingKeyFrames>
                                                     <DoubleAnimationUsingKeyFrames Storyboard.TargetName="ScaleTransform" Storyboard.TargetProperty="ScaleY">
                                                         <DiscreteDoubleKeyFrame Value="0" KeyTime="0" />
-                                                        <DiscreteDoubleKeyFrame Value="0" KeyTime="0:0:0.4" />
-                                                        <EasingDoubleKeyFrame Value="1" KeyTime="0:0:1" >
+                                                        <DiscreteDoubleKeyFrame Value="0" KeyTime="0:0:0.3" />
+                                                        <EasingDoubleKeyFrame Value="1" KeyTime="0:0:0.6" >
                                                             <EasingDoubleKeyFrame.EasingFunction>
-                                                                <BackEase EasingMode="EaseOut" />
+                                                                <CircleEase />
                                                             </EasingDoubleKeyFrame.EasingFunction>
                                                         </EasingDoubleKeyFrame>
                                                     </DoubleAnimationUsingKeyFrames>

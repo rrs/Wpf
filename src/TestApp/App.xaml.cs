@@ -20,6 +20,7 @@ public partial class App : Application
                 new Page2Presenter(),
                 new Page3Presenter(),
                 new Page4Presenter(),
+                new Page5Presenter(),
                 new Page5View(),
                 new SecretPageView()
             }

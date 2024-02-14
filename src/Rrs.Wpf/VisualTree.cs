@@ -1,5 +1,4 @@
-﻿using System.Collections.Generic;
-using System.Windows;
+﻿using System.Windows;
 using System.Windows.Media;
 
 namespace Rrs.Wpf;
@@ -22,7 +21,7 @@ public static class VisualTree
             DependencyObject child = VisualTreeHelper.GetChild(obj, i);
             if (child != null && child is T t)
             {
-                return (T)child;
+                return t;
             }
             else
             {

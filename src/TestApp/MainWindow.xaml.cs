@@ -19,4 +19,9 @@ public partial class MainWindow : Window
     {
         InitializeComponent();
     }
+
+    private void CommandBinding_Executed(object sender, ExecutedRoutedEventArgs e)
+    {
+        Close();
+    }
 }

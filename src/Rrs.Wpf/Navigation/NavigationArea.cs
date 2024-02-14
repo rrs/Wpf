@@ -201,7 +201,7 @@ public class NavigationArea : Selector
         if (navigationParameters == null)
         {
             pageKey = TypeAndNameKeyFromIndex();
-            navigationParameters = new NavigationParameters(pageKey.Type, pageKey.Name) { AddCurrentPageToHistory = true };
+            navigationParameters = new NavigationParameters(pageKey.Type, pageKey.Name);
         }
         else if (navigationParameters.PageType == null && navigationParameters.PageTypeName == null)
         {

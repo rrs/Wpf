@@ -10,9 +10,10 @@ internal class Page2Presenter : IPresenter<Page2Data>
 {
     public FrameworkElement PresentView(Page2Data? data)
     {
-        return new Page2View
-        {
-            DataContext = new Page2ViewModel {  Cookies = data?.Cookies ?? 0 }
-        };
+        var view = new Page2View();
+        var navigator = new FocusedElementNavigator(view, view.Dispatcher);
+        view.DataContext = new Page2ViewModel(navigator) { Cookies = data?.Cookies ?? 0 };
+
+        return view;
     }
 }
