@@ -14,6 +14,8 @@ public class NavigationAreaNavigator : INavigator
         _attachedNavigationAreas.Remove(n);
     }
 
+    public bool CanNavigatePrevious => _attachedNavigationAreas.Any(o => o.HistoryCount > 0);
+
     public void NextPage<TPage>(Action<TPage> pageAction, bool addCurrentToHistory = true)
     {
         foreach (var n in _attachedNavigationAreas) n.NextPage(NavigationParameters.Create(pageAction, addCurrentToHistory));

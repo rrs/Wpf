@@ -14,7 +14,7 @@ internal class SubWindowViewModel
 
     public SubWindowViewModel()
     {
-        PreviousPageCommand = new RelayCommand(_ => Navigator.PreviousPage());
+        PreviousPageCommand = new RelayCommand(_ => Navigator.PreviousPage(), _ => Navigator.CanNavigatePrevious);
         NextPageCommand = new RelayCommand(_ => Navigator.NextPage<SubWindowPresenter>());
     }
 }

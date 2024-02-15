@@ -66,6 +66,8 @@ public class NavigationArea : Selector
         set => SetValue(NavigatorProperty, value);
     }
 
+    public int HistoryCount => _history.Count;
+
     protected override void OnItemsSourceChanged(IEnumerable oldValue, IEnumerable newValue)
     {
         base.OnItemsSourceChanged(oldValue, newValue);

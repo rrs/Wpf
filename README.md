@@ -15,7 +15,7 @@ xmlns:rrs="https://github.com/rrs/wpf"
 
 The navigation framework allows for MVVM or MVPVM styles and comes with some built in annimations. I drew heavily from the transitioner in https://github.com/MaterialDesignInXAML/MaterialDesignInXamlToolkit.
 
-At the core of it is the NavigationArea. This will only keep 1 view loaded at a time, when it is paging it will retain the previous view until it has finished animating then it gets removed from the visual tree
+At the core of it is the NavigationArea. This will only keep 1 view loaded at a time, when it is paging it will retain the previous view until it has finished animating then it gets removed from the visual tree, however it will retain a history of previous pages for navigating back to unless told otherwise
 
 ```
 <rrs:NavigationArea ItemsSource="{Binding}">

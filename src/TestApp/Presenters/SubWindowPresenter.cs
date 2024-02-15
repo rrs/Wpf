@@ -7,7 +7,7 @@ namespace TestApp.Presenters;
 
 internal class SubWindowPresenter : IPresenter
 {
-    private readonly Random _random = new Random();
+    private readonly Random _random = new();
 
     public FrameworkElement PresentView(object? presenterArgs = null)
     {
@@ -15,8 +15,8 @@ internal class SubWindowPresenter : IPresenter
         var backgroundColor = Color.FromRgb((byte)_random.Next(256), (byte)_random.Next(256), (byte)_random.Next(256));
         var foreColor = ColorHelper.ContrastingForegroundColor(backgroundColor);
         view.Background = new SolidColorBrush(backgroundColor);
-        view.Foreground = new SolidColorBrush(foreColor);
         var htmlColor = System.Drawing.ColorTranslator.ToHtml(System.Drawing.Color.FromArgb(backgroundColor.A, backgroundColor.R, backgroundColor.G, backgroundColor.B));
+        view.RandomNumber.Foreground = new SolidColorBrush(foreColor);
         view.RandomNumber.Text = htmlColor;
         return view;
     }
