@@ -6,6 +6,7 @@
         xmlns:rrs="https://github.com/rrs/wpf"
         mc:Ignorable="d"
         Title="Rrs Test App"
+        WindowStartupLocation="CenterScreen"
         Height="450" Width="800">
     <Window.CommandBindings>
         <CommandBinding Command="ApplicationCommands.Close" Executed="CommandBinding_Executed" />

@@ -136,8 +136,37 @@ alternatively you can create the object as a static resource and bind to that li
 <Button Command="NavigationCommands.NextPage" CommandParameter="{rrs:Navigation Page5Presenter, Parameter={StaticResource Page5Data}}" VerticalAlignment="Center">Next</Button>
 ```
 
+### Navigation Target
+
+Navigation commands use routed events, which bubble up the visual tree, so when you need to control the navigation of a NavigationArea that is not a parent of the event there are a few ways to achieve this. 
+
+Using CommandTarget with the elementname, which will work as long as the NavigationArea is in scope in Xaml
+```
+<Button Command="NavigationCommands.NextPage" CommandParameter="Users" CommandTarget="{Binding ElementName=Page5SubNavigator}">Users</Button>
+```
+Alternitively you can use the NavigationTarget MarkupExpression which will search up the visual tree until it finds either a Window or a NavigationHost, NavigationHost is just like a wall that stops the search going any higher up the visual tree, it will then search down the visual tree using a breadth first search.
+
+```
+<Button Command="NavigationCommands.NextPage" CommandParameter="Dashboard" CommandTarget="{rrs:NavigationTarget Page5SubNavigator}">Dashboard</Button>
+```
+
+You can also bind an instance of NavigationAreaNavigator on a NavigationArea like so the class implements INavigator so can be used in VMs like any other INavigator
+
+```
+<rrs:NavigationArea Navigator="{Binding Navigator}">
+    <p:SubWindowPresenter />
+</rrs:NavigationArea>
+```
+
 
 ## Binding Proxy
+
+Binding Proxy lets you use and element in the visual logical tree as a proxy for binding between two objects, useful for when the target does not support binding natively, like validation rules.
+
+```
+<rrs:BindingProxy In="{Binding Text, ElementName=MaName}" Out="{Binding Name, ElementName=Page4Data}" />
+```
+
 
 
 ## Converters
