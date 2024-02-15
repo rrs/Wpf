@@ -22,6 +22,9 @@
         <DataTemplate DataType="{x:Type viewModels:VmBasedPage3ViewModel}">
             <views:VmBasedPage3View />
         </DataTemplate>
+        <DataTemplate DataType="{x:Type viewModels:VmBasedPage4ViewModel}">
+            <views:VmBasedPage4View />
+        </DataTemplate>
         <o:Page5Data x:Key="Page5Data" />
     </UserControl.Resources>
     <Grid>
@@ -33,7 +36,7 @@
         </Grid.RowDefinitions>
         <TextBlock HorizontalAlignment="Center" FontSize="40">Page 4</TextBlock>
         <TextBlock HorizontalAlignment="Center" FontSize="20" Grid.Row="1" Text="{Binding Name, StringFormat=Greetings {0}!, TargetNullValue={}Greetings! You shall henceforth be called Melvin}" />
-        <Border Grid.Row="1" Margin="64" BorderThickness="1" BorderBrush="SaddleBrown">
+        <Border Grid.Row="1" Margin="32" BorderThickness="1" BorderBrush="SaddleBrown">
             <rrs:NavigationArea ItemsSource="{Binding ViewModels}" ClipToBounds="True">
             </rrs:NavigationArea>
         </Border>

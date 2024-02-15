@@ -14,11 +14,8 @@
         </Grid.RowDefinitions>
         <TextBlock FontSize="40" HorizontalAlignment="Center">Page 2</TextBlock>
         <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center" >
-            <TextBlock Text="{Binding Cookies, StringFormat=Cookies Clicked {0}}" FontSize="20" />
-            <Button Command="{Binding CookieCommand}" HorizontalAlignment="Center">
-                <Button.Content>
-                    <TextBlock TextWrapping="Wrap" TextAlignment="Center">I'm a Cookie</TextBlock>
-                </Button.Content>
+            <TextBlock Text="{Binding Cookies, StringFormat=Cookies Clicked {0}}" FontSize="20" Margin="4" />
+            <Button Command="{Binding CookieCommand}" HorizontalAlignment="Center" Content="Cookie">
                 <Button.Style>
                     <Style TargetType="Button">
                         <Setter Property="Template">
