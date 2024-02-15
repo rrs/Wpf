@@ -6,11 +6,9 @@
              xmlns:local="clr-namespace:TestApp.Views"
              mc:Ignorable="d"
              d:DesignHeight="450" d:DesignWidth="800">
-    <TextBox x:Name="RandomNumber" FontSize="40" IsReadOnly="True" HorizontalAlignment="Center" VerticalAlignment="Center" Background="Transparent">
-        <TextBox.Resources>
-            <Style TargetType="Border">
-                <Setter Property="BorderThickness" Value="0" />
-            </Style>
-        </TextBox.Resources>
+    <TextBox x:Name="RandomNumber" FontSize="40" IsReadOnly="True"
+             HorizontalAlignment="Center" VerticalAlignment="Center" 
+             Background="Transparent" BorderThickness="0"
+             PreviewMouseDown="RandomNumber_MouseDown">
     </TextBox>
 </UserControl>

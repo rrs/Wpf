@@ -23,4 +23,12 @@ public partial class SubWindowView : UserControl
     {
         InitializeComponent();
     }
+
+    private void RandomNumber_MouseDown(object sender, MouseButtonEventArgs e)
+    {
+        if (e.ClickCount == 3)
+        {
+            ((TextBox)sender).SelectAll();
+        }
+    }
 }
