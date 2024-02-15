@@ -167,6 +167,19 @@ Binding Proxy lets you use and element in the visual logical tree as a proxy for
 <rrs:BindingProxy In="{Binding Text, ElementName=MaName}" Out="{Binding Name, ElementName=Page4Data}" />
 ```
 
-
-
 ## Converters
+
+Some standard converters like NotConverter and IsNullConverter that can be used as MarkupExtensions
+
+```
+"...Converter={rrs:NotConverter}..."
+...
+"...Converter={rrs:IsNullConverter}..."
+```
+
+And a Hidden or Collapsed Conveter that can be inverted
+
+```
+"...Converter={rrs:VisibilityCollapsedConverter Inverted=True}..."
+
+```
