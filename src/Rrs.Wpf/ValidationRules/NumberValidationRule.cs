@@ -8,8 +8,8 @@ public class NumberValidationRule : ValidationRule
     public decimal? Min { get; set; }
     public decimal? Max { get; set; }
 
-    public string MinErrorFormatString { get; set; }
-    public string MaxErrorFormatString { get; set; }
+    public string? MinErrorFormatString { get; set; }
+    public string? MaxErrorFormatString { get; set; }
 
     public override ValidationResult Validate(object value, CultureInfo cultureInfo)
     {

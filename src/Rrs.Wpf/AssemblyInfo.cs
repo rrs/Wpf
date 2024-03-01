@@ -4,6 +4,8 @@ using System.Windows.Markup;
 [assembly: XmlnsPrefix("https://github.com/rrs/wpf", "rrsWpf")]
 [assembly: XmlnsDefinition("https://github.com/rrs/wpf", "Rrs.Wpf")]
 [assembly: XmlnsDefinition("https://github.com/rrs/wpf", "Rrs.Wpf.Converters")]
+[assembly: XmlnsDefinition("https://github.com/rrs/wpf", "Rrs.Wpf.Navigation")]
+[assembly: XmlnsDefinition("https://github.com/rrs/wpf", "Rrs.Wpf.Navigation.Transitions")]
 [assembly: XmlnsDefinition("https://github.com/rrs/wpf", "Rrs.Wpf.ValidationRules")]
 
 [assembly: ThemeInfo(

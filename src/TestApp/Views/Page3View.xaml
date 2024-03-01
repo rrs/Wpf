@@ -1,0 +1,73 @@
+﻿<UserControl x:Class="TestApp.Views.Page3View"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:rrs="https://github.com/rrs/wpf"
+             xmlns:o="clr-namespace:TestApp.Data.Objects"
+             xmlns:presenters="clr-namespace:TestApp.Presenters"
+             mc:Ignorable="d" 
+             d:DesignHeight="450" d:DesignWidth="800"
+             Background="LightGray" RenderTransformOrigin="0.5,0.5">
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition />
+            <RowDefinition Height="Auto" />
+        </Grid.RowDefinitions>
+        <TextBlock HorizontalAlignment="Center" FontSize="40">Page 3</TextBlock>
+        <TextBlock x:Name="NumberOfCookies" Grid.Row="1" HorizontalAlignment="Center" FontSize="20" />
+        <Grid Grid.Row="1">
+            <Rectangle Fill="DarkSlateGray" Width="400" Height="200">
+                <Rectangle.OpacityMask>
+                    <DrawingBrush Stretch="None">
+                        <DrawingBrush.Drawing>
+                            <DrawingGroup>
+                                <DrawingGroup.ClipGeometry>
+                                    <RectangleGeometry Rect="0,0,400,200" />
+                                </DrawingGroup.ClipGeometry>
+                                <GeometryDrawing>
+                                    <GeometryDrawing.Brush>
+                                        <SolidColorBrush Color="Black" Opacity="0.5" />
+                                    </GeometryDrawing.Brush>
+                                    <GeometryDrawing.Geometry>
+                                        <RectangleGeometry Rect="0,0,400,200" />
+                                    </GeometryDrawing.Geometry>
+                                </GeometryDrawing>
+                                <GeometryDrawing Brush="Black">
+                                    <GeometryDrawing.Geometry>
+                                        <EllipseGeometry RadiusX="800" RadiusY="800">
+                                            <EllipseGeometry.Transform>
+                                                <TransformGroup>
+                                                    <ScaleTransform ScaleX="0.3" ScaleY="0.3" />
+                                                    <TranslateTransform X="400" Y="200" />
+                                                </TransformGroup>
+                                            </EllipseGeometry.Transform>
+                                        </EllipseGeometry>
+                                    </GeometryDrawing.Geometry>
+                                </GeometryDrawing>
+                            </DrawingGroup>
+                        </DrawingBrush.Drawing>
+                    </DrawingBrush>
+                </Rectangle.OpacityMask>
+            </Rectangle>
+        </Grid>
+        <StackPanel Grid.Row="1" HorizontalAlignment="Center" VerticalAlignment="Bottom">
+            <TextBlock FontSize="20">What is your Name?</TextBlock>
+            <TextBox x:Name="MaName" FontSize="20" />
+        </StackPanel >
+        <rrs:BindingProxy In="{Binding Text, ElementName=MaName}" Out="{Binding Name, ElementName=Page4Data}" />
+        <StackPanel Grid.Row="2" Orientation="Horizontal" HorizontalAlignment="Right">
+            <Button Command="NavigationCommands.PreviousPage">Back</Button>
+            <Button Command="NavigationCommands.NextPage" Content="Next">
+                <Button.CommandParameter>
+                    <rrs:Navigation PageType="{x:Type presenters:Page4Presenter}">
+                        <rrs:Navigation.Parameter>
+                            <o:Page4Data x:Name="Page4Data" />
+                        </rrs:Navigation.Parameter>
+                    </rrs:Navigation>
+                </Button.CommandParameter>
+            </Button>
+        </StackPanel>
+    </Grid>
+</UserControl>

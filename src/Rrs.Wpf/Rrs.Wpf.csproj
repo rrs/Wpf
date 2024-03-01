@@ -1,6 +1,6 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk.WindowsDesktop">
   <PropertyGroup>
-    <Version>3.6.1</Version>
+    <Version>3.7.0</Version>
     <LangVersion>default</LangVersion>
     <Description>Rrs.Wpf Class Library</Description>
     <Authors>Robert Snipe</Authors>
@@ -12,6 +12,8 @@
     <PackageProjectUrl>https://github.com/rrs/Wpf</PackageProjectUrl>
     <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
     <Company>rrs</Company>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
     <UseWPF>true</UseWPF>
   </PropertyGroup>
   <ItemGroup>
