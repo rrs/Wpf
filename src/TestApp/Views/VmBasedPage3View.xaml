@@ -47,7 +47,7 @@
                 </Rectangle.OpacityMask>
             </Rectangle>
             <Canvas Width="400" Height="200">
-                <Button Canvas.Left="280" Canvas.Top="10" Width="80" Height="80" Command="{Binding CloseCommand}">
+                <Button Canvas.Left="280" Canvas.Top="10" Width="80" Height="80" Command="{Binding CloseCommand}" Cursor="Hand">
                     <Button.RenderTransform>
                         <RotateTransform Angle="10" />
                     </Button.RenderTransform>

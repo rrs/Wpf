@@ -3,7 +3,7 @@ using System.Windows.Controls;
 
 namespace Rrs.Wpf.Navigation;
 
-internal class PresenterViewModelAdapter : IPresenter
+internal class PresenterViewModelAdapter : IPresenter, IApplyPageAction
 {
     private readonly FrameworkElement _e;
     private readonly object _vm;

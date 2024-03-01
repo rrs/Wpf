@@ -15,3 +15,9 @@ public interface IPresenter<TModel> : IPresenter
     FrameworkElement IPresenter.PresentView(object? presenterArgs) => PresentView(presenterArgs is TModel args ? args : default);
 #endif
 }
+
+public interface IPresenterFactory
+{
+    IPresenter CreatePresenter();
+    Type PresenterType { get; }
+}

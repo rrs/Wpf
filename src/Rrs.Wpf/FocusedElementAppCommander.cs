@@ -15,6 +15,8 @@ public class FocusedElementAppCommander : IApplicationCommander
         _dispatcher = dispatcher;
     }
 
+    public FocusedElementAppCommander(DependencyObject focusScope) : this(focusScope, focusScope.Dispatcher) { }
+
     public void Close(bool? dialogResult = null)
     {
         ApplicationCommands.Close.Execute(dialogResult, FocusManager.GetFocusedElement(_focusScope));

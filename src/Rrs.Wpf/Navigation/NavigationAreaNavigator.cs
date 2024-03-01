@@ -31,6 +31,31 @@ public class NavigationAreaNavigator : INavigator
         foreach (var n in _attachedNavigationAreas) n.NextPage(new NavigationParameters(pageType, addCurrentToHistory));
     }
 
+    public void NextPage(string pageTypeName, bool addCurrentToHistory = true)
+    {
+        foreach (var n in _attachedNavigationAreas) n.NextPage(new NavigationParameters(pageTypeName, addCurrentToHistory));
+    }
+
+    public void NextPage(bool addCurrentToHistory = true)
+    {
+        foreach (var n in _attachedNavigationAreas) n.NextPage(new NavigationParameters(addCurrentToHistory));
+    }
+
+    public void GoToPage<TPage>(Action<TPage> pageAction)
+    {
+        foreach (var n in _attachedNavigationAreas) n.GoToPage(NavigationParameters.Create(pageAction));
+    }
+
+    public void GoToPage(Type pageType)
+    {
+        foreach (var n in _attachedNavigationAreas) n.GoToPage(new NavigationParameters(pageType));
+    }
+
+    public void GoToPage(string pageTypeName)
+    {
+        foreach (var n in _attachedNavigationAreas) n.GoToPage(new NavigationParameters(pageTypeName));
+    }
+
     public void PreviousPage()
     {
         foreach (var n in _attachedNavigationAreas) n.PreviousPage();
@@ -54,6 +79,31 @@ public class NavigationAreaNavigator : INavigator
     public Task NextPageAsync(Type pageType, bool addCurrentToHistory = true)
     {
         return ApplyToAllAsync(_attachedNavigationAreas, n => n.NextPage(new NavigationParameters(pageType, addCurrentToHistory)));
+    }
+
+    public Task NextPageAsync(string pageTypeName, bool addCurrentToHistory = true)
+    {
+        return ApplyToAllAsync(_attachedNavigationAreas, n => n.NextPage(new NavigationParameters(pageTypeName, addCurrentToHistory)));
+    }
+
+    public Task NextPageAsync(bool addCurrentToHistory = true)
+    {
+        return ApplyToAllAsync(_attachedNavigationAreas, n => n.NextPage(new NavigationParameters(addCurrentToHistory)));
+    }
+    
+    public Task GoToPageAsync<TPage>(Action<TPage> pageAction)
+    {
+        return ApplyToAllAsync(_attachedNavigationAreas, n => n.GoToPage(NavigationParameters.Create(pageAction)));
+    }
+    
+    public Task GoToPageAsync(Type pageType)
+    {
+        return ApplyToAllAsync(_attachedNavigationAreas, n => n.GoToPage(new NavigationParameters(pageType)));
+    }
+    
+    public Task GoToPageAsync(string pageTypeName)
+    {
+        return ApplyToAllAsync(_attachedNavigationAreas, n => n.GoToPage(new NavigationParameters(pageTypeName)));
     }
 
     public Task PreviousPageAsync()
@@ -94,9 +144,19 @@ public class NavigationAreaNavigator : INavigator
             foreach (var n in _navigationAreas) n.NextPage(NavigationParameters.Create<TPresenter, TData>(_data, addCurrentToHistory));
         }
 
+        public void GoToPage<TPresenter>() where TPresenter : IPresenter<TData>
+        {
+            foreach (var n in _navigationAreas) n.GoToPage(NavigationParameters.Create<TPresenter, TData>(_data));
+        }
+
         public Task NextPageAsync<TPresenter>(bool addCurrentToHistory = true) where TPresenter : IPresenter<TData>
         {
             return ApplyToAllAsync(_navigationAreas, n => n.NextPage(NavigationParameters.Create<TPresenter, TData>(_data, addCurrentToHistory)));
+        }
+
+        public Task GoToPageAsync<TPresenter>() where TPresenter : IPresenter<TData>
+        {
+            return ApplyToAllAsync(_navigationAreas, n => n.GoToPage(NavigationParameters.Create<TPresenter, TData>(_data)));
         }
     }
 }

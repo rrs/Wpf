@@ -23,9 +23,21 @@ public class NavigatorPresenterData<TData> : INavigatorPresenterData<TData>
         NavigationCommands.NextPage.Execute(NavigationParameters.Create<TPresenter, TData>(_data, addCurrentToHistory), FocusManager.GetFocusedElement(_focusScope));
     }
 
+    public void GoToPage<TPresenter>()
+        where TPresenter : IPresenter<TData>
+    {
+        NavigationCommands.GoToPage.Execute(NavigationParameters.Create<TPresenter, TData>(_data), FocusManager.GetFocusedElement(_focusScope));
+    }
+
     public Task NextPageAsync<TPresenter>(bool addCurrentToHistory = true)
         where TPresenter : IPresenter<TData>
     {
         return _dispatcher.InvokeAsync(() => NextPage<TPresenter>(addCurrentToHistory)).Task;
+    }
+
+    public Task GoToPageAsync<TPresenter>()
+        where TPresenter : IPresenter<TData>
+    {
+        return _dispatcher.InvokeAsync(() => GoToPage<TPresenter>()).Task;
     }
 }

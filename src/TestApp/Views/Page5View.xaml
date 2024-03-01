@@ -106,7 +106,7 @@
         </rrs:NavigationHost>
         <StackPanel Grid.Row="2" Orientation="Horizontal" HorizontalAlignment="Right">
             <Button Command="NavigationCommands.PreviousPage">Back</Button>
-            <Button Command="NavigationCommands.NextPage" CommandParameter="Page1Presenter">Next</Button>
+            <Button Command="NavigationCommands.NextPage" CommandParameter="Page6Presenter">Next</Button>
         </StackPanel>
     </Grid>
 

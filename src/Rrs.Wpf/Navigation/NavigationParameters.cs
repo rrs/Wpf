@@ -8,6 +8,7 @@ public class NavigationParameters
     public Type? PageType { get; set; }
     public string? FrameworkElementName { get; set; }
     public object? PresenterArgs { get; set; }
+    public object? NavigationArgs { get; set; }
     public bool AddCurrentPageToHistory { get; set; } = true;
     public Action<object>? ViewModelPageAction { get; set; }
     public ITransition? ForwardsTransition { get; set; }
@@ -21,13 +22,24 @@ public class NavigationParameters
         FrameworkElementName = elementName;
     }
 
+    public NavigationParameters(bool addCurrentPageToHistory)
+    {
+        AddCurrentPageToHistory = addCurrentPageToHistory;
+    }
+
     public NavigationParameters(Type pageType, bool addCurrentPageToHistory)
     {
         PageType = pageType;
         AddCurrentPageToHistory = addCurrentPageToHistory;
     }
 
-    public static NavigationParameters Create<TViewModel>(Action<TViewModel> pageAction, bool addCurrentPageToHistory)
+    public NavigationParameters(string pageTypeName, bool addCurrentPageToHistory = true)
+    {
+        PageTypeName = pageTypeName;
+        AddCurrentPageToHistory = addCurrentPageToHistory;
+    }
+
+    public static NavigationParameters Create<TViewModel>(Action<TViewModel> pageAction, bool addCurrentPageToHistory = true)
         => new()
         {
             PageType = typeof(TViewModel),
@@ -35,7 +47,7 @@ public class NavigationParameters
             AddCurrentPageToHistory = addCurrentPageToHistory
         };
 
-    public static NavigationParameters Create<TPresenter, TViewModel>(TViewModel presenterArgs, bool addCurrentPageToHistory)
+    public static NavigationParameters Create<TPresenter, TViewModel>(TViewModel presenterArgs, bool addCurrentPageToHistory = true)
             where TPresenter : IPresenter<TViewModel>
         => new()
         {

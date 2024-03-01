@@ -7,6 +7,7 @@
         mc:Ignorable="d"
         Title="Rrs Test App"
         WindowStartupLocation="CenterScreen"
+        ResizeMode="NoResize"
         Height="450" Width="800">
     <Window.CommandBindings>
         <CommandBinding Command="ApplicationCommands.Close" Executed="CommandBinding_Executed" />

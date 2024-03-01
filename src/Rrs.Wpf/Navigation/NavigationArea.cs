@@ -83,7 +83,7 @@ public class NavigationArea : Selector
     private static readonly Point DefaultTransitionOrigin = new(0.5, 0.5);
     private readonly Stack<ViewInfo> _history = new();
     private readonly Dictionary<FrameworkElement, Guid?> _toRemove = [];
-    private readonly Dictionary<TypeAndNameKey, PresenterInfo> _presenters = [];
+    private readonly Dictionary<TypeAndNameKey, PresenterFactoryInfo> _presenters = [];
 
     private Grid? _grid;
     private ViewInfo? _currentView;
@@ -91,6 +91,7 @@ public class NavigationArea : Selector
     public NavigationArea()
     {
         CommandBindings.Add(new CommandBinding(NavigationCommands.NextPage, NextPageExecuted, CanExecuteNextPage));
+        CommandBindings.Add(new CommandBinding(NavigationCommands.GoToPage, GoToPageExecuted, CanExecuteGoToPage));
         CommandBindings.Add(new CommandBinding(NavigationCommands.PreviousPage, PreviousPageExecuted, CanExecutePreviousPage));
         CommandBindings.Add(new CommandBinding(NavigationCommands.FirstPage, FirstPageExecuted, CanExecutePreviousPage));
         var initialised = false;
@@ -136,31 +137,37 @@ public class NavigationArea : Selector
         {
             var type = o.GetType();
             TypeAndNameKey key;
-            IPresenter presenter;
-            if (o is IPresenter p)
+            IPresenterFactory presenterFactory;
+            if (o is IPresenterFactory f)
+            {
+                key = new TypeAndNameKey(f.PresenterType);
+                presenterFactory = f;
+            }
+            else if (o is IPresenter p)
             {
                 key = new TypeAndNameKey(type);
-                presenter = p;
+                presenterFactory = new PresenterFactory(p);
             }
             else if (o is FrameworkElement e)
             {
-                key = new TypeAndNameKey(type, CoerseFrameworkElementName(e));
-                presenter = new PresenterViewAdapter(e);
+                key = new TypeAndNameKey(type, CoerceFrameworkElementName(e));
+                presenterFactory = new PresenterFactory(new PresenterViewAdapter(e));
             }
             else
             {
                 key = new TypeAndNameKey(type);
-                presenter = new PresenterViewModelAdapter(o);
+                presenterFactory = new PresenterFactory(new PresenterViewModelAdapter(o));
             }
 
-            _presenters.Add(key, new PresenterInfo(presenter, index++));
+            _presenters.Add(key, new PresenterFactoryInfo(presenterFactory, index++));
         }
 
         if (Items.Count > 0 && _currentView == null)
         {
             var first = Items[0];
-            string? name = first is FrameworkElement e ? CoerseFrameworkElementName(e) : null;
-            var presenterInfo = _presenters[new TypeAndNameKey(first.GetType(), name)];
+            string? name = first is FrameworkElement e ? CoerceFrameworkElementName(e) : null;
+            var presenterFactoryInfo = _presenters[new TypeAndNameKey(first.GetType(), name)];
+            var presenterInfo = new PresenterInfo(presenterFactoryInfo.PresenterFactory.CreatePresenter(), presenterFactoryInfo.Index);
             var view = presenterInfo.Presenter.PresentView();
             _currentView = new ViewInfo(presenterInfo, view);
             _grid.Children.Add(view);
@@ -175,12 +182,46 @@ public class NavigationArea : Selector
             }, System.Windows.Threading.DispatcherPriority.ContextIdle);
         }
 
-        static string? CoerseFrameworkElementName(FrameworkElement e) => e.Name == string.Empty ? null : e.Name;
+        static string? CoerceFrameworkElementName(FrameworkElement e) => e.Name == string.Empty ? null : e.Name;
     }
 
     private void CanExecuteNextPage(object sender, CanExecuteRoutedEventArgs e)
     {
         e.CanExecute = e.Parameter != null || SelectedIndex < Items.Count - 1;
+        e.Handled = true;
+    }
+
+    private void CanExecuteGoToPage(object sender, CanExecuteRoutedEventArgs e)
+    {
+        if (e.Parameter == null || !_history.Any())
+        {
+            e.CanExecute = false;
+        }
+        else
+        {
+            var navigationParameters = CoerceNavigationParameter(e.Parameter);
+            if (navigationParameters == null)
+            {
+                e.CanExecute = false;
+            }
+            else
+            {
+                var pageType = navigationParameters.PageType ??
+                    GetPageTypeFromName(navigationParameters.PageTypeName);
+
+                if (pageType == null)
+                {
+                    e.CanExecute = false;
+                }
+                else
+                {
+                    var pageKey = new TypeAndNameKey(pageType, navigationParameters.FrameworkElementName);
+                    var presenterFactory = _presenters[pageKey];
+                    var view = _history.LastOrDefault(o => o.PresenterInfo.Index == presenterFactory.Index);
+                    e.CanExecute = view != null;
+                }
+            }
+        }
         e.Handled = true;
     }
 
@@ -194,6 +235,12 @@ public class NavigationArea : Selector
     {
         var eventOrigin = GetNavigationSourcePoint(e);
         NextPage(e.Parameter, eventOrigin);
+    }
+
+    private void GoToPageExecuted(object sender, ExecutedRoutedEventArgs e)
+    {
+        var eventOrigin = GetNavigationSourcePoint(e);
+        GoToPage(e.Parameter, eventOrigin);
     }
 
     internal void NextPage(object? parameter = null, Point? eventOrigin = null)
@@ -217,7 +264,8 @@ public class NavigationArea : Selector
             pageKey = new TypeAndNameKey(pageType, navigationParameters.FrameworkElementName);
         }
 
-        var presenterInfo = _presenters[pageKey];
+        var presenterFactory = _presenters[pageKey];
+        var presenterInfo = new PresenterInfo(presenterFactory.PresenterFactory.CreatePresenter(), presenterFactory.Index);
         var nextPageParams = new NextPageParameters(presenterInfo, eventOrigin,
             navigationParameters.AddCurrentPageToHistory,
             navigationParameters.PresenterArgs,
@@ -235,6 +283,27 @@ public class NavigationArea : Selector
         }
     }
 
+    internal void GoToPage(object? parameter = null, Point? eventOrigin = null)
+    {
+        var navigationParameters = CoerceNavigationParameter(parameter);
+        if (navigationParameters == null || (navigationParameters.PageType == null && navigationParameters.PageTypeName == null))
+        {
+            throw new Exception("GoToPage Command requires a page type or name");
+        }
+
+        var pageType = navigationParameters.PageType ??
+                GetPageTypeFromName(navigationParameters.PageTypeName) ??
+                throw new Exception($"No page found for type {navigationParameters.PageType?.ToString() ?? navigationParameters.PageTypeName}");
+        var pageKey = new TypeAndNameKey(pageType, navigationParameters.FrameworkElementName);
+
+        var presenterFactory = _presenters[pageKey];
+        var presenterInfo = new PresenterInfo(presenterFactory.PresenterFactory.CreatePresenter(), presenterFactory.Index);
+        var nextPageParams = new GoToPageParameters(presenterInfo, eventOrigin,
+            navigationParameters.PresenterArgs,
+            navigationParameters.ViewModelPageAction);
+        GoToPage(nextPageParams);
+    }
+
     private NavigationParameters? CoerceNavigationParameter(object? parameter)
     {
         if (parameter is string s) return GetNavigationParametersFromTypeName(s);
@@ -243,9 +312,9 @@ public class NavigationArea : Selector
 
     private Type? GetPageTypeFromName(string? name)
     {
-        foreach (var item in Items)
+        foreach (var item in _presenters.Keys)
         {
-            var itemType = item.GetType();
+            var itemType = item.Type;
             if (itemType.Name == name) return itemType;
         }
         return null;
@@ -255,6 +324,10 @@ public class NavigationArea : Selector
     {
         foreach (var item in Items)
         {
+            if (item is IPresenterFactory factory && factory.PresenterType.Name == name)
+            {
+                return new NavigationParameters(factory.PresenterType);
+            }
             var itemType = item.GetType();
             if (item is FrameworkElement e && e.Name == name)
             {
@@ -276,6 +349,9 @@ public class NavigationArea : Selector
 
         oldViewInfo.View.IsHitTestVisible = false;
         nextViewInfo.View.IsHitTestVisible = true;
+
+        HorizontalAlignment = nextViewInfo.View.HorizontalAlignment;
+        VerticalAlignment = nextViewInfo.View.VerticalAlignment;
 
         TryOnNavigateFromView(oldViewInfo.View);
         TryOnNavigateToView(nextViewInfo.View);
@@ -316,8 +392,10 @@ public class NavigationArea : Selector
         var viewInfo = new ViewInfo(nextPageParameters.PresenterInfo, view);
         if (viewInfo == _currentView) return;
 
-        if (viewInfo.PresenterInfo.Presenter is PresenterViewModelAdapter pvm)
-            pvm.ApplyPageAction(nextPageParameters.VmPageAction);
+        if (viewInfo.PresenterInfo.Presenter is IApplyPageAction pa)
+            pa.ApplyPageAction(nextPageParameters.PresenterAction);
+        else
+            nextPageParameters.PresenterAction?.Invoke(viewInfo.PresenterInfo.Presenter);
 
         view.Visibility = Visibility.Hidden;
 
@@ -409,6 +487,65 @@ public class NavigationArea : Selector
         FirstPage(eventOrigin);
     }
 
+    internal void GoToPage(GoToPageParameters gotoPageParameters)
+    {
+        if (_grid == null) return;
+        if (_currentView == null) return;
+        if (!_history.Any()) return;
+
+        var deadPages = new List<ViewInfo>();
+
+        ViewInfo? previousViewInfo = null;
+
+        while (previousViewInfo?.PresenterInfo.Index != gotoPageParameters.PresenterInfo.Index && _history.Count > 1)
+        {
+            if (previousViewInfo != null) deadPages.Add(previousViewInfo);
+            previousViewInfo = _history.Pop();
+        }
+
+        if (previousViewInfo == null) throw new Exception($"No view found matching type {gotoPageParameters.PresenterInfo.Presenter.GetType()} in history");
+
+        var view = previousViewInfo.PresenterInfo.Presenter.PresentView(gotoPageParameters.PresenterArgs);
+
+        var viewInfo = new ViewInfo(gotoPageParameters.PresenterInfo, view);
+
+        if (viewInfo.PresenterInfo.Presenter is IApplyPageAction pa)
+            pa.ApplyPageAction(gotoPageParameters.PresenterAction);
+        else
+            gotoPageParameters.PresenterAction?.Invoke(viewInfo.PresenterInfo.Presenter);
+
+        var oldViewInfo = _currentView;
+
+        var contextId = SwapView(viewInfo, oldViewInfo);
+
+        if (_toRemove.ContainsKey(viewInfo.View))
+        {
+            _toRemove[viewInfo.View] = null;
+        }
+        else
+        {
+            _grid.Children.Insert(0, viewInfo.View);
+        }
+
+        var transition = previousViewInfo.BackwardsToMeTransition ??
+            TransitionAssist.GetBackwardsToMeTransition(previousViewInfo.View) ??
+            BackwardsTransition;
+        Dispatcher.InvokeAsync(() =>
+        {
+            transition.Transition(oldViewInfo.View, viewInfo.View, gotoPageParameters.EventOrigin ?? DefaultTransitionOrigin, () =>
+            {
+                foreach (var deadViewInfo in deadPages)
+                {
+                    var deadView = deadViewInfo.View;
+                    RemoveView(_grid, _toRemove, deadView);
+                }
+                RemoveView(_grid, _toRemove, oldViewInfo.View);
+                ClearAnimations(oldViewInfo.View);
+            });
+        }, System.Windows.Threading.DispatcherPriority.ContextIdle);
+    }
+
+
     internal void FirstPage(Point? eventOrigin = null)
     {
         if (_grid == null) return;
@@ -482,11 +619,14 @@ public class NavigationArea : Selector
         => !double.IsNaN(@double) && !double.IsInfinity(@double) && @double > 0.0;
 
     public record TypeAndNameKey(Type Type, string? Name = null);
+    public record PresenterFactoryInfo(IPresenterFactory PresenterFactory, int Index);
     public record PresenterInfo(IPresenter Presenter, int Index);
     public record ViewInfo(PresenterInfo PresenterInfo, FrameworkElement View)
     {
         public ITransition? BackwardsToMeTransition { get; set; }
     }
-    public record NextPageParameters(PresenterInfo PresenterInfo, Point? EventOrigin, bool AddCurrentPageToHistory, object? PresenterArgs, Action<object>? VmPageAction, ITransition? BackwardsTransition, ITransition? ForwardsTransition);
+    public record NextPageParameters(PresenterInfo PresenterInfo, Point? EventOrigin, bool AddCurrentPageToHistory, object? PresenterArgs, Action<object>? PresenterAction, ITransition? BackwardsTransition, ITransition? ForwardsTransition);
+    public record GoToPageParameters(PresenterInfo PresenterInfo, Point? EventOrigin, object? PresenterArgs, Action<object>? PresenterAction);
+
 }
 

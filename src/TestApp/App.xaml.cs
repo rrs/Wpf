@@ -22,6 +22,7 @@ public partial class App : Application
                 new Page4Presenter(),
                 new Page5Presenter(),
                 new Page5View(),
+                new Page6PresenterFactory(),
                 new SecretPageView()
             }
         };
