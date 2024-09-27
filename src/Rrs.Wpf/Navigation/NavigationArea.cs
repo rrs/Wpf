@@ -353,6 +353,7 @@ public class NavigationArea : Selector
         HorizontalAlignment = nextViewInfo.View.HorizontalAlignment;
         VerticalAlignment = nextViewInfo.View.VerticalAlignment;
 
+        nextViewInfo.View.ApplyTemplate();
         TryOnNavigateFromView(oldViewInfo.View);
         TryOnNavigateToView(nextViewInfo.View);
 

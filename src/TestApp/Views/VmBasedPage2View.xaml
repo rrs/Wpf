@@ -37,7 +37,7 @@
                                             <RectangleGeometry.Transform>
                                                 <TransformGroup>
                                                     <TranslateTransform X="0" Y="0" />
-                                                    <RotateTransform Angle="20" CenterX="240" CenterY="60" />
+                                                    <RotateTransform Angle="{Binding TimesNavigatedTo, Converter={rrs:MathConverter Operation=Add}, ConverterParameter=20}" CenterX="240" CenterY="60" />
                                                 </TransformGroup>
                                             </RectangleGeometry.Transform>
                                         </RectangleGeometry>

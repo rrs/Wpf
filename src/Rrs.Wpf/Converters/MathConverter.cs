@@ -1,5 +1,6 @@
 ﻿using System.Globalization;
 using System.Windows.Data;
+using System.Windows.Markup;
 
 namespace Rrs.Wpf.Converters;
 
@@ -11,7 +12,7 @@ public enum MathOperation
     Divide
 }
 
-public sealed class MathConverter : IValueConverter
+public sealed class MathConverter : MarkupExtension, IValueConverter
 {
     public MathOperation Operation { get; set; }
     public double? Min { get; set; }
@@ -54,4 +55,7 @@ public sealed class MathConverter : IValueConverter
     {
         return Binding.DoNothing;
     }
+
+    public override object ProvideValue(IServiceProvider serviceProvider)
+        => this;
 }
