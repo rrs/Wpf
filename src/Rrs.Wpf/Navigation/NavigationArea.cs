@@ -118,6 +118,19 @@ public class NavigationArea : Selector
         };
     }
 
+    public FrameworkElement? GetViewForViewModel(object viewModel)
+    {
+        if (_grid == null) return null;
+        foreach(FrameworkElement view in _grid.Children)
+        {
+            if (view.DataContext == viewModel)
+            {
+                return view;
+            }
+        }
+        return null;
+    }
+
     public override void OnApplyTemplate()
     {
         base.OnApplyTemplate();
