@@ -109,6 +109,4 @@
             <Button Command="NavigationCommands.NextPage" CommandParameter="Page6Presenter">Next</Button>
         </StackPanel>
     </Grid>
-
-    
 </UserControl>

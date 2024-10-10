@@ -4,7 +4,10 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:rrs="https://github.com/rrs/wpf"
+             xmlns:views="clr-namespace:TestApp.Views"
+             xmlns:o="clr-namespace:TestApp.Data.Objects"
              mc:Ignorable="d" 
+             Name="UserControl"
              Background="MidnightBlue"
              d:DesignHeight="450" d:DesignWidth="800">
     <Grid>
@@ -42,9 +45,18 @@
                 </StackPanel>
             </Grid>
         </rrs:NavigationArea>
+        <rrs:BindingProxy In="{Binding Text}" Out="{Binding Text, ElementName=Page7Data}" />
         <StackPanel Grid.Row="2" Orientation="Horizontal" HorizontalAlignment="Right">
             <Button Command="NavigationCommands.PreviousPage">Back</Button>
-            <Button Command="NavigationCommands.NextPage" CommandParameter="Page1Presenter">Next</Button>
+            <Button Command="NavigationCommands.NextPage" Content="Next">
+                <Button.CommandParameter>
+                    <rrs:Navigation PageType="{x:Type views:Page7View}">
+                        <rrs:Navigation.Parameter>
+                            <o:Page7Data x:Name="Page7Data" />
+                        </rrs:Navigation.Parameter>
+                    </rrs:Navigation>
+                </Button.CommandParameter>
+            </Button>
         </StackPanel>
     </Grid>
 </UserControl>
