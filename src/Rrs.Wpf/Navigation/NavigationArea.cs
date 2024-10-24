@@ -13,6 +13,15 @@ public class NavigationArea : Selector
 {
     private const string PART_Grid = "PART_Grid";
 
+    public static readonly RoutedEvent ViewChangedEvent = EventManager.RegisterRoutedEvent(nameof(ViewChanged), RoutingStrategy.Bubble, typeof(ViewChangedEventHandler), typeof(NavigationArea));
+
+    // Provide CLR accessors for assigning an event handler.
+    public event RoutedEventHandler ViewChanged
+    {
+        add { AddHandler(ViewChangedEvent, value); }
+        remove { RemoveHandler(ViewChangedEvent, value); }
+    }
+
     static NavigationArea()
     {
         DefaultStyleKeyProperty.OverrideMetadata(typeof(NavigationArea), new FrameworkPropertyMetadata(typeof(NavigationArea)));
@@ -107,6 +116,8 @@ public class NavigationArea : Selector
         {
             _currentViewInfo = value;
             CurrentView = value?.View;
+            CurrentView?.ApplyTemplate();
+            RaiseEvent(new ViewChangedEventArgs(ViewChangedEvent, CurrentView));
         }
     }
 
@@ -388,7 +399,7 @@ public class NavigationArea : Selector
         HorizontalAlignment = nextViewInfo.View.HorizontalAlignment;
         VerticalAlignment = nextViewInfo.View.VerticalAlignment;
 
-        nextViewInfo.View.ApplyTemplate();
+        //nextViewInfo.View.ApplyTemplate();
         TryOnNavigateFromView(oldViewInfo.View);
         TryOnNavigateToView(nextViewInfo.View);
 

@@ -13,7 +13,7 @@ internal class PresenterViewModelAdapter : IPresenter, IApplyPageAction
         _vm = vm;
         _e = new ContentPresenter
         {
-            Content = _vm
+            Content = _vm,
         };
     }
 
