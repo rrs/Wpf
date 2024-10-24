@@ -12,7 +12,7 @@ public class FocusedElementNavigator : INavigator
     public FocusedElementNavigator(DependencyObject focusScope, Dispatcher dispatcher)
     {
         _focusScope = focusScope;
-        _dispatcher = focusScope.Dispatcher;
+        _dispatcher = dispatcher;
     }
 
     public FocusedElementNavigator(DependencyObject focusScope) : this(focusScope, focusScope.Dispatcher) { }
@@ -46,8 +46,7 @@ public class FocusedElementNavigator : INavigator
 
     public void GoToPage<TPage>(Action<TPage> pageAction)
     {
-        ((ICommand)NavigationCommands.GoToPage).Execute(NavigationParameters.Create(pageAction));
-        //NavigationCommands.GoToPage.Execute(NavigationParameters.Create(pageAction), FocusManager.GetFocusedElement(_focusScope));
+        NavigationCommands.GoToPage.Execute(NavigationParameters.Create(pageAction), FocusManager.GetFocusedElement(_focusScope));
     }
 
     public void GoToPage(Type pageType)

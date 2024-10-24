@@ -8,14 +8,40 @@
         mc:Ignorable="d"
         WindowStartupLocation="CenterScreen"
         ResizeMode="NoResize"
-        Title="Random" Height="160" Width="400">
+        Title="Random"
+        Name="UserControl"
+        Height="160" Width="400">
     <Grid>
-        <rrs:NavigationArea Navigator="{Binding Navigator}">
-            <p:SubWindowPresenter />
+        <rrs:NavigationArea x:Name="Navi" >
+            <p:SubWindowPresenter  />
         </rrs:NavigationArea>
-        <StackPanel Orientation="Horizontal" VerticalAlignment="Bottom" HorizontalAlignment="Right">
-            <Button Command="{Binding PreviousPageCommand}">Back</Button>
-            <Button Command="{Binding NextPageCommand}">Next</Button>
-        </StackPanel>
+        <UniformGrid Rows="1">
+            <UniformGrid.Resources>
+                <Style TargetType="Button">
+                    <Setter Property="Template">
+                        <Setter.Value>
+                            <ControlTemplate TargetType="Button">
+                                <Grid>
+                                    <ContentPresenter />
+                                </Grid>
+                            </ControlTemplate>
+                        </Setter.Value>
+                    </Setter>
+                </Style>
+                <Style TargetType="TextBlock">
+                    <Setter Property="Foreground" Value="{Binding CurrentView.(TextElement.Foreground), ElementName=Navi}" />
+                </Style>
+            </UniformGrid.Resources>
+            <Button Command="NavigationCommands.PreviousPage" CommandTarget="{rrs:NavigationTarget Navi}" FontSize="40">
+                <Border Background="Transparent">
+                    <TextBlock VerticalAlignment="Center" HorizontalAlignment="Center" Margin="0 0 64 0">&#x276E;</TextBlock>
+                </Border>
+            </Button>
+            <Button Command="NavigationCommands.NextPage" CommandParameter="{rrs:Navigation SubWindowPresenter}" CommandTarget="{rrs:NavigationTarget Navi}" FontSize="40">
+                <Border Background="Transparent">
+                    <TextBlock VerticalAlignment="Center" HorizontalAlignment="Center" Margin="64 0 0 0">&#x276F;</TextBlock>
+                </Border>
+            </Button>
+        </UniformGrid>
     </Grid>
 </Window>

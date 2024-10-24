@@ -1,4 +1,5 @@
 ﻿using Rrs.Wpf.Navigation.Transitions;
+using System.Windows;
 
 namespace Rrs.Wpf.Navigation;
 

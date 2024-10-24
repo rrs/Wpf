@@ -27,29 +27,10 @@ public class Navigation : MarkupExtension
             PageTypeName = PageName,
             PageType = PageType,
             FrameworkElementName = ElementName,
-            PresenterArgs = Parameter, //BindParamter(Parameter),
+            PresenterArgs = Parameter,
             AddCurrentPageToHistory = AddCurrentPageToHistory,
             ForwardsTransition = ForwardsTransition,
             BackwardsTransition = BackwardsTransition,
         };
     }
-
-    //private object? BindParamter(object? parameter)
-    //{
-    //    if (parameter is NavigationParameter np)
-    //    {
-    //        var data = Activator.CreateInstance(np.ObjectType);
-    //        foreach(var setter in np.Setters)
-    //        {
-    //            var binding = new Binding(setter.Property);
-    //            binding.Source = data;
-    //            BindingOperations.SetBinding(setter, NavigationSetter.ValueProperty, binding);
-    //        }
-    //        return data;
-    //    }
-    //    else
-    //    {
-    //        return parameter;
-    //    }
-    //}
 }

@@ -66,6 +66,18 @@ public class NavigationArea : Selector
         set => SetValue(NavigatorProperty, value);
     }
 
+    private static readonly DependencyPropertyKey CurrentViewPropertyKey = DependencyProperty.RegisterReadOnly(
+        nameof(CurrentView), typeof(FrameworkElement), typeof(NavigationArea), new PropertyMetadata());
+
+    public static readonly DependencyProperty CurrentViewProperty =
+        CurrentViewPropertyKey.DependencyProperty;
+
+    public FrameworkElement? CurrentView
+    {
+        get => (FrameworkElement?)GetValue(CurrentViewProperty);
+        private set => SetValue(CurrentViewPropertyKey, value);
+    }
+
     public int HistoryCount => _history.Count;
 
     protected override void OnItemsSourceChanged(IEnumerable oldValue, IEnumerable newValue)
@@ -86,7 +98,17 @@ public class NavigationArea : Selector
     private readonly Dictionary<TypeAndNameKey, PresenterFactoryInfo> _presenters = [];
 
     private Grid? _grid;
-    private ViewInfo? _currentView;
+
+    private ViewInfo? _currentViewInfo;
+    private ViewInfo? CurrentViewInfo
+    {
+        get => _currentViewInfo;
+        set
+        {
+            _currentViewInfo = value;
+            CurrentView = value?.View;
+        }
+    }
 
     public NavigationArea()
     {
@@ -113,8 +135,8 @@ public class NavigationArea : Selector
         };
         Unloaded += (sender, args) =>
         {
-            if (_currentView == null) return;
-            TryOnNavigateFromView(_currentView.View);
+            if (CurrentViewInfo == null) return;
+            TryOnNavigateFromView(CurrentViewInfo.View);
         };
     }
 
@@ -175,23 +197,23 @@ public class NavigationArea : Selector
             _presenters.Add(key, new PresenterFactoryInfo(presenterFactory, index++));
         }
 
-        if (Items.Count > 0 && _currentView == null)
+        if (Items.Count > 0 && CurrentViewInfo == null)
         {
             var first = Items[0];
             string? name = first is FrameworkElement e ? CoerceFrameworkElementName(e) : null;
             var presenterFactoryInfo = _presenters[new TypeAndNameKey(first.GetType(), name)];
             var presenterInfo = new PresenterInfo(presenterFactoryInfo.PresenterFactory.CreatePresenter(), presenterFactoryInfo.Index);
             var view = presenterInfo.Presenter.PresentView();
-            _currentView = new ViewInfo(presenterInfo, view);
+            CurrentViewInfo = new ViewInfo(presenterInfo, view);
             _grid.Children.Add(view);
             SelectedIndex = 0;
         }
 
-        if (_currentView != null)
+        if (CurrentViewInfo != null)
         {
             Dispatcher.InvokeAsync(() =>
             {
-                TryOnNavigateToView(_currentView.View);
+                TryOnNavigateToView(CurrentViewInfo.View);
             }, System.Windows.Threading.DispatcherPriority.ContextIdle);
         }
 
@@ -246,13 +268,13 @@ public class NavigationArea : Selector
 
     private void NextPageExecuted(object sender, ExecutedRoutedEventArgs e)
     {
-        var eventOrigin = GetNavigationSourcePoint(e);
+        var eventOrigin = GetNavigationSourcePoint();
         NextPage(e.Parameter, eventOrigin);
     }
 
     private void GoToPageExecuted(object sender, ExecutedRoutedEventArgs e)
     {
-        var eventOrigin = GetNavigationSourcePoint(e);
+        var eventOrigin = GetNavigationSourcePoint();
         GoToPage(e.Parameter, eventOrigin);
     }
 
@@ -357,7 +379,7 @@ public class NavigationArea : Selector
 
     private Guid SwapView(ViewInfo nextViewInfo, ViewInfo oldViewInfo)
     {
-        _currentView = nextViewInfo;
+        CurrentViewInfo = nextViewInfo;
         SelectedIndex = nextViewInfo.PresenterInfo.Index;
 
         oldViewInfo.View.IsHitTestVisible = false;
@@ -404,7 +426,7 @@ public class NavigationArea : Selector
         var view = nextPageParameters.PresenterInfo.Presenter.PresentView(nextPageParameters.PresenterArgs);
 
         var viewInfo = new ViewInfo(nextPageParameters.PresenterInfo, view);
-        if (viewInfo == _currentView) return;
+        if (viewInfo == CurrentViewInfo) return;
 
         if (viewInfo.PresenterInfo.Presenter is IApplyPageAction pa)
             pa.ApplyPageAction(nextPageParameters.PresenterAction);
@@ -422,14 +444,14 @@ public class NavigationArea : Selector
             _grid.Children.Add(view);
         }
 
-        if (_currentView == null)
+        if (CurrentViewInfo == null)
         {
             view.Visibility = Visibility.Visible;
-            _currentView = viewInfo;
+            CurrentViewInfo = viewInfo;
             return;
         }
 
-        var oldViewInfo = _currentView;
+        var oldViewInfo = CurrentViewInfo;
         var contextId = SwapView(viewInfo, oldViewInfo);
         oldViewInfo.BackwardsToMeTransition = nextPageParameters.BackwardsTransition;
         if (HistoryEnabled && nextPageParameters.AddCurrentPageToHistory)
@@ -455,18 +477,18 @@ public class NavigationArea : Selector
 
     private void PreviousPageExecuted(object sender, ExecutedRoutedEventArgs e)
     {
-        var eventOrigin = GetNavigationSourcePoint(e);
+        var eventOrigin = GetNavigationSourcePoint();
         PreviousPage(eventOrigin);
     }
 
     internal void PreviousPage(Point? eventOrigin = null)
     {
         if (_grid == null) return;
-        if (_currentView == null) return;
+        if (CurrentViewInfo == null) return;
         if (!_history.Any()) return;
 
         var previousViewInfo = _history.Pop();
-        var oldViewInfo = _currentView;
+        var oldViewInfo = CurrentViewInfo;
 
         var contextId = SwapView(previousViewInfo, oldViewInfo);
 
@@ -497,14 +519,14 @@ public class NavigationArea : Selector
 
     private void FirstPageExecuted(object sender, ExecutedRoutedEventArgs e)
     {
-        var eventOrigin = GetNavigationSourcePoint(e);
+        var eventOrigin = GetNavigationSourcePoint();
         FirstPage(eventOrigin);
     }
 
     internal void GoToPage(GoToPageParameters gotoPageParameters)
     {
         if (_grid == null) return;
-        if (_currentView == null) return;
+        if (CurrentViewInfo == null) return;
         if (!_history.Any()) return;
 
         var deadPages = new List<ViewInfo>();
@@ -528,7 +550,7 @@ public class NavigationArea : Selector
         else
             gotoPageParameters.PresenterAction?.Invoke(viewInfo.PresenterInfo.Presenter);
 
-        var oldViewInfo = _currentView;
+        var oldViewInfo = CurrentViewInfo;
 
         var contextId = SwapView(viewInfo, oldViewInfo);
 
@@ -563,7 +585,7 @@ public class NavigationArea : Selector
     internal void FirstPage(Point? eventOrigin = null)
     {
         if (_grid == null) return;
-        if (_currentView == null) return;
+        if (CurrentViewInfo == null) return;
         if (!_history.Any()) return;
 
         var deadPages = new List<ViewInfo>();
@@ -573,7 +595,7 @@ public class NavigationArea : Selector
         }
 
         var previousViewInfo = _history.Pop();
-        var oldViewInfo = _currentView;
+        var oldViewInfo = CurrentViewInfo;
 
         var contextId = SwapView(previousViewInfo, oldViewInfo);
 
@@ -617,15 +639,15 @@ public class NavigationArea : Selector
         view.BeginAnimation(OpacityProperty, null);
     }
 
-    private Point? GetNavigationSourcePoint(RoutedEventArgs executedRoutedEventArgs)
+    private Point? GetNavigationSourcePoint()
     {
-        var sourceElement = executedRoutedEventArgs.OriginalSource as FrameworkElement;
-        if (sourceElement == null || !IsAncestorOf(sourceElement) || !IsSafePositive(ActualWidth) ||
-            !IsSafePositive(ActualHeight) || !IsSafePositive(sourceElement.ActualWidth) ||
-            !IsSafePositive(sourceElement.ActualHeight)) return null;
+        //var sourceElement = executedRoutedEventArgs.OriginalSource as FrameworkElement;
+        //if (sourceElement == null || !IsAncestorOf(sourceElement) || !IsSafePositive(ActualWidth) ||
+        //    !IsSafePositive(ActualHeight) || !IsSafePositive(sourceElement.ActualWidth) ||
+        //    !IsSafePositive(sourceElement.ActualHeight)) return null;
+        var mousePosition = Mouse.GetPosition(this);
 
-        var transitionOrigin = sourceElement.TranslatePoint(new Point(sourceElement.ActualWidth / 2, sourceElement.ActualHeight / 2), this);
-        transitionOrigin = new Point(transitionOrigin.X / ActualWidth, transitionOrigin.Y / ActualHeight);
+        var transitionOrigin = new Point(mousePosition.X / ActualWidth, mousePosition.Y / ActualHeight);
         return transitionOrigin;
     }
 

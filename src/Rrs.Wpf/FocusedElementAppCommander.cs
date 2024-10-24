@@ -7,12 +7,13 @@ namespace Rrs.Wpf;
 public class FocusedElementAppCommander : IApplicationCommander
 {
     private readonly DependencyObject _focusScope;
-    private readonly Dispatcher _dispatcher;
+
+    public Dispatcher Dispatcher { get; }
 
     public FocusedElementAppCommander(DependencyObject focusScope, Dispatcher dispatcher)
     {
         _focusScope = focusScope;
-        _dispatcher = dispatcher;
+        Dispatcher = dispatcher;
     }
 
     public FocusedElementAppCommander(DependencyObject focusScope) : this(focusScope, focusScope.Dispatcher) { }
@@ -24,6 +25,6 @@ public class FocusedElementAppCommander : IApplicationCommander
 
     public Task CloseAsync(bool? dialogResult = null)
     {
-        return _dispatcher.InvokeAsync(() => Close(dialogResult)).Task;
+        return Dispatcher.InvokeAsync(() => Close(dialogResult)).Task;
     }
 }
