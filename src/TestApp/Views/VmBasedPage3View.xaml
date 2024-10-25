@@ -58,6 +58,7 @@
                     </Button.Template>
                 </Button>
             </Canvas>
+            <CheckBox HorizontalAlignment="Center" VerticalAlignment="Bottom" Margin="16" IsChecked="{Binding ShouldBounce}">Bounce?</CheckBox>
         </Grid>
         <StackPanel Grid.Row="2" Orientation="Horizontal" HorizontalAlignment="Right">
             <Button Command="NavigationCommands.PreviousPage">Back</Button>

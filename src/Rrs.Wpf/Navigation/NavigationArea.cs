@@ -5,6 +5,7 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Controls.Primitives;
 using System.Windows.Input;
+using System.Windows.Threading;
 
 namespace Rrs.Wpf.Navigation;
 
@@ -116,7 +117,7 @@ public class NavigationArea : Selector
         {
             _currentViewInfo = value;
             CurrentView = value?.View;
-            CurrentView?.ApplyTemplate();
+            //CurrentView?.ApplyTemplate();
             RaiseEvent(new ViewChangedEventArgs(ViewChangedEvent, CurrentView));
         }
     }
@@ -147,7 +148,7 @@ public class NavigationArea : Selector
         Unloaded += (sender, args) =>
         {
             if (CurrentViewInfo == null) return;
-            TryOnNavigateFromView(CurrentViewInfo.View);
+            TryOnNavigateFromView(Dispatcher, CurrentViewInfo.View);
         };
     }
 
@@ -222,10 +223,11 @@ public class NavigationArea : Selector
 
         if (CurrentViewInfo != null)
         {
-            Dispatcher.InvokeAsync(() =>
-            {
-                TryOnNavigateToView(CurrentViewInfo.View);
-            }, System.Windows.Threading.DispatcherPriority.ContextIdle);
+            TryOnNavigateToView(Dispatcher, CurrentViewInfo.View);
+            //Dispatcher.InvokeAsync(() =>
+            //{
+                
+            //}, System.Windows.Threading.DispatcherPriority.ContextIdle);
         }
 
         static string? CoerceFrameworkElementName(FrameworkElement e) => e.Name == string.Empty ? null : e.Name;
@@ -400,8 +402,8 @@ public class NavigationArea : Selector
         VerticalAlignment = nextViewInfo.View.VerticalAlignment;
 
         //nextViewInfo.View.ApplyTemplate();
-        TryOnNavigateFromView(oldViewInfo.View);
-        TryOnNavigateToView(nextViewInfo.View);
+        TryOnNavigateFromView(Dispatcher, oldViewInfo.View);
+        TryOnNavigateToView(Dispatcher, nextViewInfo.View);
 
         var contextId = Guid.NewGuid();
         _toRemove[oldViewInfo.View] = contextId;
@@ -409,10 +411,13 @@ public class NavigationArea : Selector
         return contextId;
     }
 
-    private static void TryOnNavigateFromView(FrameworkElement view)
+    private static void TryOnNavigateFromView(Dispatcher dispatcher, FrameworkElement view)
     {
-        TryOnNavigateFrom(view);
-        TryOnNavigateFrom(view.DataContext);
+        dispatcher.InvokeAsync(() =>
+        { 
+            TryOnNavigateFrom(view);
+            TryOnNavigateFrom(view.DataContext);
+        }, DispatcherPriority.ContextIdle);
 
         static void TryOnNavigateFrom(object? o)
         {
@@ -420,10 +425,13 @@ public class NavigationArea : Selector
         }
     }
 
-    private static void TryOnNavigateToView(FrameworkElement view)
+    private static void TryOnNavigateToView(Dispatcher dispatcher, FrameworkElement view)
     {
-        TryOnNavigateTo(view);
-        TryOnNavigateTo(view.DataContext);
+        dispatcher.InvokeAsync(() =>
+        {
+            TryOnNavigateTo(view);
+            TryOnNavigateTo(view.DataContext);
+        }, DispatcherPriority.ContextIdle);
 
         static void TryOnNavigateTo(object? o)
         {

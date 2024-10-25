@@ -12,7 +12,7 @@ internal class Page4ViewModel
             new VmBasedPage1ViewModel(),
             new VmBasedPage2ViewModel(),
             new VmBasedPage3ViewModel(navigator),
-            new VmBasedPage4ViewModel()
+            new VmBasedPage4ViewModel(navigator)
         };
     }
 

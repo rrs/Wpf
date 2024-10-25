@@ -1,6 +1,6 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk.WindowsDesktop">
   <PropertyGroup>
-    <Version>3.12.0</Version>
+    <Version>3.13.0</Version>
     <LangVersion>default</LangVersion>
     <Description>Rrs.Wpf Class Library</Description>
     <Authors>Robert Snipe</Authors>
