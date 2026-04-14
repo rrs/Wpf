@@ -46,6 +46,11 @@ public class NavigationAreaNavigator : INavigator
         foreach (var n in _attachedNavigationAreas) n.GoToPage(NavigationParameters.Create(pageAction));
     }
 
+    public void GoToPage<TPage>()
+    {
+        foreach (var n in _attachedNavigationAreas) n.GoToPage(NavigationParameters.Create<TPage>(false));
+    }
+
     public void GoToPage(Type pageType)
     {
         foreach (var n in _attachedNavigationAreas) n.GoToPage(new NavigationParameters(pageType));
@@ -95,7 +100,12 @@ public class NavigationAreaNavigator : INavigator
     {
         return ApplyToAllAsync(_attachedNavigationAreas, n => n.GoToPage(NavigationParameters.Create(pageAction)));
     }
-    
+
+    public Task GoToPageAsync<TPage>()
+    {
+        return ApplyToAllAsync(_attachedNavigationAreas, n => n.GoToPage(NavigationParameters.Create<TPage>(false)));
+    }
+
     public Task GoToPageAsync(Type pageType)
     {
         return ApplyToAllAsync(_attachedNavigationAreas, n => n.GoToPage(new NavigationParameters(pageType)));

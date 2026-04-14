@@ -81,7 +81,49 @@
                 </Rectangle>
                 <StackPanel Grid.Row="1" Orientation="Horizontal" HorizontalAlignment="Right">
                     <TextBlock VerticalAlignment="Center">How many cookies would you like sir?</TextBlock>
-                    <TextBox Width="100" Margin="4 0" VerticalAlignment="Center" Text="{Binding Cookies, UpdateSourceTrigger=PropertyChanged}" />
+                    <TextBox Width="100" Margin="4 0" VerticalAlignment="Center">
+                        <TextBox.Text>
+                            <Binding Path="Cookies" UpdateSourceTrigger="PropertyChanged">
+                                <Binding.ValidationRules>
+                                    <rrs:NotNullOrEmptyValidationRule />
+                                </Binding.ValidationRules>
+                            </Binding>
+                        </TextBox.Text>
+                    </TextBox>
+                    <Button Command="NavigationCommands.PreviousPage">Back</Button>
+                    <Button Command="NavigationCommands.NextPage">Next</Button>
+                </StackPanel>
+            </Grid>
+            <Grid x:Name="Page1SubView3">
+                <Grid.RowDefinitions>
+                    <RowDefinition />
+                    <RowDefinition Height="Auto" />
+                </Grid.RowDefinitions>
+                <Rectangle Fill="OrangeRed" />
+                <Rectangle Fill="DarkSlateGray">
+                    <Rectangle.RenderTransform>
+                        <TransformGroup>
+                        </TransformGroup>
+                    </Rectangle.RenderTransform>
+                    <Rectangle.Clip>
+                        <CombinedGeometry GeometryCombineMode="Exclude">
+                            <CombinedGeometry.Geometry1>
+                                <RectangleGeometry Rect="0,0,2000,2000"></RectangleGeometry>
+                            </CombinedGeometry.Geometry1>
+                            <CombinedGeometry.Geometry2>
+                                <EllipseGeometry RadiusX="60" RadiusY="60">
+                                    <EllipseGeometry.Transform>
+                                        <TransformGroup>
+                                            <TranslateTransform X="200" Y="120" />
+                                            <ScaleTransform ScaleX="1" ScaleY="1" />
+                                        </TransformGroup>
+                                    </EllipseGeometry.Transform>
+                                </EllipseGeometry>
+                            </CombinedGeometry.Geometry2>
+                        </CombinedGeometry>
+                    </Rectangle.Clip>
+                </Rectangle>
+                <StackPanel Grid.Row="1" Orientation="Horizontal" HorizontalAlignment="Right">
                     <Button Command="NavigationCommands.PreviousPage">Back</Button>
                     <Button Command="NavigationCommands.NextPage">Next</Button>
                 </StackPanel>

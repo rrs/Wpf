@@ -23,6 +23,15 @@ public class NavigationArea : Selector
         remove { RemoveHandler(ViewChangedEvent, value); }
     }
 
+    public static readonly RoutedEvent ItemContainerGeneratedEvent = EventManager.RegisterRoutedEvent(nameof(ItemContainerGenerated), RoutingStrategy.Bubble, typeof(ItemContainerGeneratedEventHandler), typeof(NavigationArea));
+
+    // Provide CLR accessors for assigning an event handler.
+    public event RoutedEventHandler ItemContainerGenerated
+    {
+        add { AddHandler(ItemContainerGeneratedEvent, value); }
+        remove { RemoveHandler(ItemContainerGeneratedEvent, value); }
+    }
+
     static NavigationArea()
     {
         DefaultStyleKeyProperty.OverrideMetadata(typeof(NavigationArea), new FrameworkPropertyMetadata(typeof(NavigationArea)));
@@ -117,7 +126,6 @@ public class NavigationArea : Selector
         {
             _currentViewInfo = value;
             CurrentView = value?.View;
-            //CurrentView?.ApplyTemplate();
             RaiseEvent(new ViewChangedEventArgs(ViewChangedEvent, CurrentView));
         }
     }
@@ -197,7 +205,7 @@ public class NavigationArea : Selector
             }
             else if (o is FrameworkElement e)
             {
-                key = new TypeAndNameKey(type, CoerceFrameworkElementName(e));
+                key = new TypeAndNameKey(type, e.Name);
                 presenterFactory = new PresenterFactory(new PresenterViewAdapter(e));
             }
             else
@@ -212,10 +220,10 @@ public class NavigationArea : Selector
         if (Items.Count > 0 && CurrentViewInfo == null)
         {
             var first = Items[0];
-            string? name = first is FrameworkElement e ? CoerceFrameworkElementName(e) : null;
+            string? name = first is FrameworkElement e ? e.Name : null;
             var presenterFactoryInfo = _presenters[new TypeAndNameKey(first.GetType(), name)];
             var presenterInfo = new PresenterInfo(presenterFactoryInfo.PresenterFactory.CreatePresenter(), presenterFactoryInfo.Index);
-            var view = presenterInfo.Presenter.PresentView();
+            var view = PresentView(presenterInfo);
             CurrentViewInfo = new ViewInfo(presenterInfo, view);
             _grid.Children.Add(view);
             SelectedIndex = 0;
@@ -224,13 +232,31 @@ public class NavigationArea : Selector
         if (CurrentViewInfo != null)
         {
             TryOnNavigateToView(Dispatcher, CurrentViewInfo.View);
-            //Dispatcher.InvokeAsync(() =>
-            //{
-                
-            //}, System.Windows.Threading.DispatcherPriority.ContextIdle);
+        }
+    }
+
+    private FrameworkElement PresentView(PresenterInfo presenterInfo, object? presenterArgs = null)
+    {
+        var view = presenterInfo.Presenter.PresentView(presenterArgs);
+        if (ItemContainerStyle != null)
+        {
+            var container = new ContentControl
+            {
+                // Apply the Style provided by the XAML user!
+                Style = this.ItemContainerStyle,
+
+                // Put the raw View inside the wrapper
+                Content = view,
+
+                // Ensure DataContext flows correctly to the wrapper
+                DataContext = view.DataContext
+            };
+            RaiseEvent(new ItemContainerGeneratedEventArgs(ItemContainerGeneratedEvent, container));
+
+            return container;
         }
 
-        static string? CoerceFrameworkElementName(FrameworkElement e) => e.Name == string.Empty ? null : e.Name;
+        return view;
     }
 
     private void CanExecuteNextPage(object sender, CanExecuteRoutedEventArgs e)
@@ -442,7 +468,7 @@ public class NavigationArea : Selector
     private void NextPage(NextPageParameters nextPageParameters)
     {
         if (_grid == null) return;
-        var view = nextPageParameters.PresenterInfo.Presenter.PresentView(nextPageParameters.PresenterArgs);
+        var view = PresentView(nextPageParameters.PresenterInfo, nextPageParameters.PresenterArgs);
 
         var viewInfo = new ViewInfo(nextPageParameters.PresenterInfo, view);
         if (viewInfo == CurrentViewInfo) return;
@@ -491,7 +517,7 @@ public class NavigationArea : Selector
                     ClearAnimations(oldViewInfo.View);
                 }
             });
-        }, System.Windows.Threading.DispatcherPriority.ContextIdle);
+        }, DispatcherPriority.ContextIdle);
     }
 
     private void PreviousPageExecuted(object sender, ExecutedRoutedEventArgs e)
@@ -533,7 +559,7 @@ public class NavigationArea : Selector
                     ClearAnimations(oldViewInfo.View);
                 }
             });
-        }, System.Windows.Threading.DispatcherPriority.ContextIdle);
+        }, DispatcherPriority.ContextIdle);
     }
 
     private void FirstPageExecuted(object sender, ExecutedRoutedEventArgs e)
@@ -552,7 +578,7 @@ public class NavigationArea : Selector
 
         ViewInfo? previousViewInfo = null;
 
-        while (previousViewInfo?.PresenterInfo.Index != gotoPageParameters.PresenterInfo.Index && _history.Count > 1)
+        while (previousViewInfo?.PresenterInfo.Index != gotoPageParameters.PresenterInfo.Index && _history.Count > 0)
         {
             if (previousViewInfo != null) deadPages.Add(previousViewInfo);
             previousViewInfo = _history.Pop();
@@ -560,7 +586,7 @@ public class NavigationArea : Selector
 
         if (previousViewInfo == null) throw new Exception($"No view found matching type {gotoPageParameters.PresenterInfo.Presenter.GetType()} in history");
 
-        var view = previousViewInfo.PresenterInfo.Presenter.PresentView(gotoPageParameters.PresenterArgs);
+        var view = PresentView(previousViewInfo.PresenterInfo, gotoPageParameters.PresenterArgs);
 
         var viewInfo = new ViewInfo(gotoPageParameters.PresenterInfo, view);
 
@@ -597,7 +623,7 @@ public class NavigationArea : Selector
                 RemoveView(_grid, _toRemove, oldViewInfo.View);
                 ClearAnimations(oldViewInfo.View);
             });
-        }, System.Windows.Threading.DispatcherPriority.ContextIdle);
+        }, DispatcherPriority.ContextIdle);
     }
 
 
@@ -642,7 +668,7 @@ public class NavigationArea : Selector
                 RemoveView(_grid, _toRemove, oldViewInfo.View);
                 ClearAnimations(oldViewInfo.View);
             });
-        }, System.Windows.Threading.DispatcherPriority.ContextIdle);
+        }, DispatcherPriority.ContextIdle);
     }
 
     private static void RemoveView(Grid grid, IDictionary<FrameworkElement, Guid?> toRemove, FrameworkElement view)
@@ -660,20 +686,27 @@ public class NavigationArea : Selector
 
     private Point? GetNavigationSourcePoint()
     {
-        //var sourceElement = executedRoutedEventArgs.OriginalSource as FrameworkElement;
-        //if (sourceElement == null || !IsAncestorOf(sourceElement) || !IsSafePositive(ActualWidth) ||
-        //    !IsSafePositive(ActualHeight) || !IsSafePositive(sourceElement.ActualWidth) ||
-        //    !IsSafePositive(sourceElement.ActualHeight)) return null;
         var mousePosition = Mouse.GetPosition(this);
 
         var transitionOrigin = new Point(mousePosition.X / ActualWidth, mousePosition.Y / ActualHeight);
         return transitionOrigin;
     }
 
-    private static bool IsSafePositive(double @double)
-        => !double.IsNaN(@double) && !double.IsInfinity(@double) && @double > 0.0;
+    protected override DependencyObject GetContainerForItemOverride() => new ContentControl();
 
-    public record TypeAndNameKey(Type Type, string? Name = null);
+    protected override bool IsItemItsOwnContainerOverride(object item) => item is ContentControl;
+
+    public record TypeAndNameKey
+    {
+        public Type Type { get; init; }
+        public string? Name { get; init; }
+
+        public TypeAndNameKey(Type type, string? name = null)
+        {
+            Type = type;
+            Name = string.IsNullOrEmpty(name) ? null : name;
+        }
+    }
     public record PresenterFactoryInfo(IPresenterFactory PresenterFactory, int Index);
     public record PresenterInfo(IPresenter Presenter, int Index);
     public record ViewInfo(PresenterInfo PresenterInfo, FrameworkElement View)

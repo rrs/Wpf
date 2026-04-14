@@ -49,6 +49,11 @@ public class FocusedElementNavigator : INavigator
         NavigationCommands.GoToPage.Execute(NavigationParameters.Create(pageAction), FocusManager.GetFocusedElement(_focusScope));
     }
 
+    public void GoToPage<TPage>()
+    {
+        NavigationCommands.GoToPage.Execute(NavigationParameters.Create<TPage>(false), FocusManager.GetFocusedElement(_focusScope));
+    }
+
     public void GoToPage(Type pageType)
     {
         NavigationCommands.GoToPage.Execute(new NavigationParameters(pageType), FocusManager.GetFocusedElement(_focusScope));
@@ -97,6 +102,11 @@ public class FocusedElementNavigator : INavigator
     public Task GoToPageAsync<TPage>(Action<TPage> pageAction)
     {
         return _dispatcher.InvokeAsync(() => GoToPage(pageAction)).Task;
+    }
+
+    public Task GoToPageAsync<TPage>()
+    {
+        return _dispatcher.InvokeAsync(GoToPage<TPage>).Task;
     }
 
     public Task GoToPageAsync(Type pageType)

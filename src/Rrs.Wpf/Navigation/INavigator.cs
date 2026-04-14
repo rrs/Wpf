@@ -10,6 +10,7 @@ public interface INavigator
     void NextPage(string pageTypeName, bool addCurrentToHistory = true);
     void NextPage(bool addCurrentToHistory = true);
     void GoToPage<TPage>(Action<TPage> pageAction);
+    void GoToPage<TPage>();
     void GoToPage(Type pageType);
     void GoToPage(string pageTypeName);
     void PreviousPage();
@@ -21,6 +22,7 @@ public interface INavigator
     Task NextPageAsync(string pageTypeName, bool addCurrentToHistory = true);
     Task NextPageAsync(bool addCurrentToHistory = true);
     Task GoToPageAsync<TPage>(Action<TPage> pageAction);
+    Task GoToPageAsync<TPage>();
     Task GoToPageAsync(Type pageType);
     Task GoToPageAsync(string pageTypeName);
     Task PreviousPageAsync();
