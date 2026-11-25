@@ -440,9 +440,8 @@ public class NavigationArea : Selector
     private static void TryOnNavigateFromView(Dispatcher dispatcher, FrameworkElement view)
     {
         dispatcher.InvokeAsync(() =>
-        { 
-            TryOnNavigateFrom(view);
-            TryOnNavigateFrom(view.DataContext);
+        {
+            foreach (var target in GetNavigationTargets(view)) TryOnNavigateFrom(target);
         }, DispatcherPriority.ContextIdle);
 
         static void TryOnNavigateFrom(object? o)
@@ -451,12 +450,53 @@ public class NavigationArea : Selector
         }
     }
 
+    /// <summary>
+    /// The objects that should be told about navigation for a view: the view itself, its DataContext, and - when
+    /// an ItemContainerStyle has wrapped the view in a container - the wrapped view, its DataContext and, for
+    /// view model based pages, the view model held by the inner ContentPresenter.
+    /// The container's DataContext is captured before the inner presenter has resolved its own, so it can be null;
+    /// without looking inside, view models never receive OnNavigatedTo / OnNavigatedFrom.
+    /// </summary>
+    private static List<object> GetNavigationTargets(FrameworkElement view)
+    {
+        var targets = new List<object>();
+
+        void Add(object? o)
+        {
+            if (o == null) return;
+            foreach (var existing in targets)
+            {
+                if (ReferenceEquals(existing, o)) return;
+            }
+            targets.Add(o);
+        }
+
+        Add(view);
+        Add(view.DataContext);
+
+        if (view is ContentPresenter presenter)
+        {
+            Add(presenter.Content);
+        }
+
+        if (view is ContentControl container && container.Content is FrameworkElement inner && !ReferenceEquals(inner, view))
+        {
+            Add(inner);
+            Add(inner.DataContext);
+            if (inner is ContentPresenter innerPresenter)
+            {
+                Add(innerPresenter.Content);
+            }
+        }
+
+        return targets;
+    }
+
     private static void TryOnNavigateToView(Dispatcher dispatcher, FrameworkElement view)
     {
         dispatcher.InvokeAsync(() =>
         {
-            TryOnNavigateTo(view);
-            TryOnNavigateTo(view.DataContext);
+            foreach (var target in GetNavigationTargets(view)) TryOnNavigateTo(target);
         }, DispatcherPriority.ContextIdle);
 
         static void TryOnNavigateTo(object? o)
